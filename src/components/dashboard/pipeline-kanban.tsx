@@ -53,7 +53,7 @@ interface ColumnProps {
 
 function Column({ title, count, dotColor, labelColor, children }: ColumnProps) {
   return (
-    <div className="flex-shrink-0 w-72 flex flex-col gap-4">
+    <div className="flex-1 min-w-0 flex flex-col gap-4">
       <div className="flex items-center justify-between px-2">
         <span className={`text-sm font-bold ${labelColor}`}>{title} ({count})</span>
         <span className={`w-2 h-2 rounded-full ${dotColor}`} />
@@ -90,7 +90,7 @@ export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
   return (
     <div>
       <h2 className="text-lg font-bold text-slate-800 mb-4">תהליך מכירה (Pipeline)</h2>
-      <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth" style={{ height: "auto", minHeight: "200px" }}>
+      <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(5, minmax(0, 1fr))" }}>
         <Column title="ליד חדש" count={pipeline.newLeads.length} dotColor="bg-slate-300" labelColor="text-slate-600">
           {pipeline.newLeads.map((lead) => (
             <PipelineCard

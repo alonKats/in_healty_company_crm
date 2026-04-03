@@ -55,6 +55,68 @@ async function main() {
   }
 
   // =============================================
+  // SERVICES — real catalog from Dexel health week quote
+  // =============================================
+
+  const serviceDefinitions = [
+    // עמדות בריאות (Health Stands)
+    { name: "עמדת משקאות חורף ומתוקים טבעיים", categoryId: "cat-stands", basePrice: 13900, description: "עד 500 עובדים" },
+    { name: "עמדת סמודי בולס", categoryId: "cat-stands", basePrice: 12950, description: "כולל התכולה העשירה, ניוד מבני בר וצוות מיומן" },
+    { name: "עמדת אסאי", categoryId: "cat-stands", basePrice: 11500, description: "עד 300 עובדים" },
+    { name: "עמדת שייקים", categoryId: "cat-stands", basePrice: 9800, description: "עד 300 עובדים" },
+    { name: "עמדת סלטים", categoryId: "cat-stands", basePrice: 8500, description: "עד 200 עובדים" },
+    { name: "עמדת מרקים", categoryId: "cat-stands", basePrice: 8300, description: "עד 200 עובדים" },
+    // הרצאות מומחים (Expert Lectures)
+    { name: "הרצאה 'האנשים הבריאים בעולם' / אופיר פוגל", categoryId: "cat-lectures", basePrice: 3550, description: "משך ההרצאה: שעה" },
+    { name: "הרצאה בריאות האישה בגיל המעבר", categoryId: "cat-lectures", basePrice: 3200, description: "משך ההרצאה: שעה" },
+    { name: "הרצאה לחודש המודעות לסרטן הערמונית", categoryId: "cat-lectures", basePrice: 6500, description: "ד\"ר דן קרת, משך שעה" },
+    { name: "הרצאת תזונה מודעת", categoryId: "cat-lectures", basePrice: 3000, description: "משך ההרצאה: שעה" },
+    { name: "הרצאה למניעת סרטן", categoryId: "cat-lectures", basePrice: 4800, description: "משך ההרצאה: שעה" },
+    { name: "הרצאת קיימות ומזון", categoryId: "cat-lectures", basePrice: 3500, description: "משך ההרצאה: שעה" },
+    // סדנאות בריאות (Health Workshops)
+    { name: "סדנת Free(z) your mind – נשימות וחשיפה לקור", categoryId: "cat-workshops-health", basePrice: 4800, description: "משך שעה, עד 35 משתתפים. סבב נוסף ב-2000 ₪" },
+    { name: "סדנת רוקחות טבעית", categoryId: "cat-workshops-health", basePrice: 3800, description: "משך שעה ורבע, עד 40 משתתפים" },
+    // סדנאות תזונה (Nutrition Workshops)
+    { name: "סדנת תזונה", categoryId: "cat-workshops-nutrition", basePrice: 3200, description: "משך שעה, עד 40 משתתפים" },
+    { name: "סדנת חטיפי אנרגיה", categoryId: "cat-workshops-nutrition", basePrice: 3500, description: "משך שעה, עד 35 משתתפים" },
+    // סדנאות בישול (Cooking Workshops)
+    { name: "סדנת בישול בריא", categoryId: "cat-workshops-cooking", basePrice: 4200, description: "משך שעה וחצי, עד 30 משתתפים" },
+    { name: "סדנת שייקים וצמחי מרפא", categoryId: "cat-workshops-cooking", basePrice: 3800, description: "משך שעה, עד 35 משתתפים" },
+    // סדנאות גוף נפש (Body & Mind)
+    { name: "סדנת יוגה בליווי צלילים חיים", categoryId: "cat-workshops-bodymind", basePrice: 3400, description: "משך שעה ורבע, עד 35 משתתפים" },
+    { name: "סדנת מדיטציה", categoryId: "cat-workshops-bodymind", basePrice: 2800, description: "משך שעה, עד 40 משתתפים" },
+    // תנועה וחיזוק (Movement)
+    { name: "שיעור פילאטיס", categoryId: "cat-movement", basePrice: 950, description: "כולל נסיעות והבאת מזרנים" },
+    { name: "שיעור יוגה", categoryId: "cat-movement", basePrice: 950, description: "כולל נסיעות והבאת מזרנים" },
+    // בדיקות רופאים ומדדים (Medical)
+    { name: "בדיקת מדדים ויעוץ תזונתי – 5 יועצות", categoryId: "cat-medical", basePrice: 10500, description: "5 יועצות תזונה, 7 שעות, 100 ייעוצים" },
+    { name: "בדיקות כירורגית שד – יומיים", categoryId: "cat-medical", basePrice: 18500, description: "יומיים, 7 שעות מדי יום, 46 בדיקות מדי יום" },
+    { name: "בדיקות רופאת עור – יומיים", categoryId: "cat-medical", basePrice: 21000, description: "יומיים בדיקות" },
+    // אתגרי בריאות (Health Challenges)
+    { name: "אתגר אוכלים בריא", categoryId: "cat-challenges", basePrice: 5000, description: "תכנית ארגונית, חודש" },
+  ];
+
+  const serviceMap = new Map<string, string>(); // name -> id
+  for (const svc of serviceDefinitions) {
+    const existing = await prisma.service.findFirst({ where: { name: svc.name } });
+    if (existing) {
+      serviceMap.set(svc.name, existing.id);
+      continue;
+    }
+    const created = await prisma.service.create({
+      data: {
+        name: svc.name,
+        categoryId: svc.categoryId,
+        basePrice: svc.basePrice,
+        description: svc.description,
+        sourceType: "IN_HOUSE",
+        status: "ACTIVE",
+      },
+    });
+    serviceMap.set(svc.name, created.id);
+  }
+
+  // =============================================
   // CLIENT DATA — imported from Oren's Excel sheets
   // =============================================
 
@@ -252,6 +314,31 @@ async function main() {
       const totalAmount = items.reduce((sum, i) => sum + i.amount, 0);
       const eventDate = new Date(first.year, first.month - 1, 15); // mid-month
 
+      // Map order item descriptions to real service IDs where possible
+      const descriptionToServiceName: Record<string, string> = {
+        "כירורגית שד": "בדיקות כירורגית שד – יומיים",
+        "בדיקות מדדים": "בדיקת מדדים ויעוץ תזונתי – 5 יועצות",
+        "עמדת משקאות חורף": "עמדת משקאות חורף ומתוקים טבעיים",
+        "סדנת חטיפים": "סדנת חטיפי אנרגיה",
+        "עמדת סמודי בולס": "עמדת סמודי בולס",
+        "הרצאה למניעת סרטן": "הרצאה למניעת סרטן",
+        "סדנת רוקחות טבעית": "סדנת רוקחות טבעית",
+        "עמדת מרקים": "עמדת מרקים",
+        "סדנת שייקים": "סדנת שייקים וצמחי מרפא",
+        "עמדת סלטים": "עמדת סלטים",
+        "הרצאת קיימות": "הרצאת קיימות ומזון",
+        "יוגה": "שיעור יוגה",
+      };
+
+      function resolveServiceId(description: string): string | undefined {
+        for (const [keyword, serviceName] of Object.entries(descriptionToServiceName)) {
+          if (description.includes(keyword)) {
+            return serviceMap.get(serviceName);
+          }
+        }
+        return undefined;
+      }
+
       const order = await prisma.order.create({
         data: {
           clientId,
@@ -265,6 +352,7 @@ async function main() {
               quantity: item.quantity,
               unitPrice: item.amount / item.quantity,
               total: item.amount,
+              serviceId: resolveServiceId(item.description),
             })),
           },
           payments: {
