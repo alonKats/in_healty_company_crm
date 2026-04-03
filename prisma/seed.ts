@@ -174,10 +174,118 @@ async function main() {
     clientCount++;
   }
 
+  // =============================================
+  // 2026 INCOME DATA — from Oren's revenue CSV
+  // =============================================
+
+  const existingOrders = await prisma.order.count();
+  let orderCount = 0;
+
+  if (existingOrders === 0) {
+    const sales2026: Array<{
+      month: number;
+      year: number;
+      client: string;
+      description: string;
+      quantity: number;
+      amount: number;
+    }> = [
+      // January 2026
+      { month: 1, year: 2026, client: "סימנס", description: "כירורגית שד", quantity: 1, amount: 8450 },
+      { month: 1, year: 2026, client: "קלאודינרי", description: "חודש בריאות", quantity: 1, amount: 24350 },
+      { month: 1, year: 2026, client: "קלאודינרי", description: "בדיקות מדדים", quantity: 1, amount: 9650 },
+      { month: 1, year: 2026, client: "קלאודינרי", description: "עמדת משקאות חורף", quantity: 1, amount: 7000 },
+      { month: 1, year: 2026, client: "קלאודינרי", description: "סדנת חטיפים", quantity: 1, amount: 7700 },
+      // February 2026
+      { month: 2, year: 2026, client: "דאטהריילס", description: "עמדת סמודי בולס וחטיפי אנרגיה", quantity: 1, amount: 7000 },
+      { month: 2, year: 2026, client: "HP", description: "הרצאה למניעת סרטן", quantity: 1, amount: 4800 },
+      { month: 2, year: 2026, client: "זירו נטוורקס", description: "סדנת רוקחות טבעית", quantity: 1, amount: 5650 },
+      { month: 2, year: 2026, client: "זירו נטוורקס", description: "עמדת משקאות חורף", quantity: 1, amount: 4250 },
+      { month: 2, year: 2026, client: "גונג", description: "סדנת שייקים", quantity: 1, amount: 4200 },
+      { month: 2, year: 2026, client: "גונג", description: "סדנת צמחי מרפא", quantity: 2, amount: 7700 },
+      { month: 2, year: 2026, client: "HPE", description: "עמדת מרקים", quantity: 1, amount: 8300 },
+      { month: 2, year: 2026, client: "נובו נורדיסק", description: "סדנת שייקים", quantity: 1, amount: 3650 },
+      // March 2026
+      { month: 3, year: 2026, client: "איקאה", description: "סדנאות רוקחות", quantity: 5, amount: 28400 },
+      { month: 3, year: 2026, client: "סימנס", description: "שבוע בריאות", quantity: 1, amount: 44350 },
+      { month: 3, year: 2026, client: "סימנס", description: "עמדות בריאות", quantity: 3, amount: 8550 },
+      { month: 3, year: 2026, client: "סימנס", description: "הרצאות", quantity: 3, amount: 2500 },
+      { month: 3, year: 2026, client: "סימנס", description: "סדנאות בריאות", quantity: 3, amount: 2500 },
+      { month: 3, year: 2026, client: "סימנס", description: "בדיקות", quantity: 10, amount: 19900 },
+      { month: 3, year: 2026, client: "סימנס", description: "יוגה", quantity: 2, amount: 2200 },
+      { month: 3, year: 2026, client: "סימנס", description: "עמדת סלטים", quantity: 2, amount: 3200 },
+      { month: 3, year: 2026, client: "סימנס", description: "סדנאות בישול", quantity: 3, amount: 5500 },
+      { month: 3, year: 2026, client: "טכניון", description: "עמדת סלטים ושייקים", quantity: 1, amount: 9700 },
+      { month: 3, year: 2026, client: "הייבוב", description: "עמדת משקאות חורף", quantity: 1, amount: 6950 },
+      { month: 3, year: 2026, client: "הייבוב", description: "הרצאה צמבוז", quantity: 1, amount: 10700 },
+      { month: 3, year: 2026, client: "סודה סטרים", description: "עמדת משקאות חורף לכנס מנהלים", quantity: 1, amount: 11650 },
+      { month: 3, year: 2026, client: "סטורנקסט", description: "עמדת שייקים וכריכים", quantity: 1, amount: 7750 },
+      { month: 3, year: 2026, client: "אדרניסט עו\"ד", description: "הרצאת קיימות", quantity: 1, amount: 5050 },
+    ];
+
+    // Group sales by client+month into orders
+    const orderGroups = new Map<string, typeof sales2026>();
+    for (const sale of sales2026) {
+      const key = `${sale.client}-${sale.month}-${sale.year}`;
+      if (!orderGroups.has(key)) orderGroups.set(key, []);
+      orderGroups.get(key)!.push(sale);
+    }
+
+    for (const [, items] of orderGroups) {
+      const first = items[0];
+      const clientRecord = await prisma.client.findFirst({
+        where: { name: first.client },
+      });
+
+      // Create client if doesn't exist (e.g., טכניון, נובו נורדיסק)
+      const clientId = clientRecord?.id ?? (
+        await prisma.client.create({
+          data: {
+            name: first.client,
+            status: "ACTIVE",
+            source: "COLD_OUTREACH",
+            assignedToId: admin.id,
+          },
+        })
+      ).id;
+
+      const totalAmount = items.reduce((sum, i) => sum + i.amount, 0);
+      const eventDate = new Date(first.year, first.month - 1, 15); // mid-month
+
+      const order = await prisma.order.create({
+        data: {
+          clientId,
+          status: "COMPLETED",
+          type: items.length > 1 ? "BUNDLE" : "SINGLE",
+          eventDate,
+          totalAmount,
+          items: {
+            create: items.map((item) => ({
+              description: item.description,
+              quantity: item.quantity,
+              unitPrice: item.amount / item.quantity,
+              total: item.amount,
+            })),
+          },
+          payments: {
+            create: {
+              amount: totalAmount,
+              method: "TRANSFER",
+              date: eventDate,
+              status: "PAID",
+            },
+          },
+        },
+      });
+      orderCount++;
+    }
+  }
+
   console.log("Seed complete:", {
     users: [admin.email, staff.email],
     categories: serviceCategories.length,
     clients: clientCount,
+    orders: orderCount,
   });
 }
 
