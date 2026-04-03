@@ -16,15 +16,32 @@ import { Textarea } from "@/components/ui/textarea";
 import { PlusIcon } from "lucide-react";
 import { createLeadQuick } from "@/lib/actions/client-actions";
 
+const serviceChips = [
+  { value: "קייטרינג", label: "קייטרינג" },
+  { value: "סדנה", label: "סדנה" },
+  { value: "הרצאה", label: "הרצאה" },
+  { value: "בדיקות", label: "בדיקות" },
+  { value: "חבילה", label: "חבילה" },
+];
+
 export function QuickAddLead() {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const router = useRouter();
 
+  function toggleService(value: string) {
+    setSelectedServices((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+  }
+
   async function handleSubmit(formData: FormData) {
+    formData.set("serviceInterest", selectedServices.join(", "));
     startTransition(async () => {
       await createLeadQuick(formData);
       setOpen(false);
+      setSelectedServices([]);
       router.refresh();
     });
   }
@@ -40,7 +57,7 @@ export function QuickAddLead() {
         ליד חדש
       </button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setSelectedServices([]); }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>הוספת ליד חדש</DialogTitle>
@@ -73,6 +90,25 @@ export function QuickAddLead() {
                 placeholder="מספר טלפון (אופציונלי)"
                 dir="ltr"
               />
+            </div>
+            <div className="space-y-1.5">
+              <Label>מתעניין ב</Label>
+              <div className="flex flex-wrap gap-2">
+                {serviceChips.map((chip) => (
+                  <button
+                    key={chip.value}
+                    type="button"
+                    onClick={() => toggleService(chip.value)}
+                    className={`text-sm px-3 py-1 rounded-full border transition-colors ${
+                      selectedServices.includes(chip.value)
+                        ? "bg-teal-600 text-white border-teal-600"
+                        : "bg-white text-slate-600 border-slate-300 hover:border-teal-400"
+                    }`}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="lead-note">הערה</Label>

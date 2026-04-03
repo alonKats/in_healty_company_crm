@@ -9,14 +9,20 @@ export async function createLeadQuick(formData: FormData) {
   const name = formData.get("name") as string;
   const company = (formData.get("company") as string) || null;
   const phone = (formData.get("phone") as string) || null;
-  const notes = (formData.get("note") as string) || null;
+  const noteText = (formData.get("note") as string) || "";
+  const serviceInterest = (formData.get("serviceInterest") as string) || "";
+
+  const noteParts = [
+    noteText,
+    serviceInterest ? `תחומי עניין: ${serviceInterest}` : "",
+  ].filter(Boolean);
 
   await prisma.client.create({
     data: {
       name,
       company,
       phone,
-      notes,
+      notes: noteParts.join("\n") || null,
       source: "INBOUND",
       status: "LEAD",
     },
