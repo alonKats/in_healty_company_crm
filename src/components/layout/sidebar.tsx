@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, FileText, ShoppingCart, Calendar, Package, Wallet, Settings, Leaf } from "lucide-react";
+import { LayoutDashboard, Users, FileText, ShoppingCart, Calendar, Package, UserCheck, Wallet, Settings, Leaf } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/generated/prisma";
 
@@ -13,6 +13,7 @@ const navItems = [
   { href: "/orders", label: "הזמנות", icon: ShoppingCart },
   { href: "/calendar", label: "לוח שנה", icon: Calendar },
   { href: "/services", label: "מוצרים", icon: Package },
+  { href: "/providers", label: "ספקים", icon: UserCheck },
   { href: "/expenses", label: "הוצאות", icon: Wallet },
   { href: "/settings", label: "הגדרות", icon: Settings, adminOnly: true },
 ];

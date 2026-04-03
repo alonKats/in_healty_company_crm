@@ -173,6 +173,7 @@ model Service {
   costItems   CostItem[]
   quoteItems  QuoteItem[]
   orderItems  OrderItem[]
+  providers   ProviderService[]
 }
 
 model CostItem {
@@ -313,4 +314,35 @@ model Activity {
   createdById String
   createdBy   User              @relation(fields: [createdById], references: [id])
   createdAt   DateTime          @default(now())
+}
+
+enum FeeType {
+  PER_EVENT
+  PER_HOUR
+  PER_PARTICIPANT
+}
+
+model Provider {
+  id          String   @id @default(uuid())
+  name        String
+  phone       String?
+  email       String?
+  specialty   String?
+  notes       String?
+  feeType     FeeType  @default(PER_EVENT)
+  defaultFee  Decimal?
+  rating      Int?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  services    ProviderService[]
+}
+
+model ProviderService {
+  id         String   @id @default(uuid())
+  providerId String
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  serviceId  String
+  service    Service  @relation(fields: [serviceId], references: [id])
+  fee        Decimal?
 }
