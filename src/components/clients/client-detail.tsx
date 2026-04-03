@@ -14,10 +14,12 @@ import {
   PlusIcon,
   FileTextIcon,
   ShoppingBagIcon,
+  PencilIcon,
 } from "lucide-react";
 import { ActivityFeed } from "./activity-feed";
 import { ContactList } from "./contact-list";
 import { AddActivityDialog } from "./add-activity-dialog";
+import { EditClientDialog } from "./edit-client-dialog";
 import type { Client, Contact, Activity, Quote, Order, User } from "@/generated/prisma";
 
 interface ActivityWithUser extends Activity {
@@ -38,6 +40,7 @@ interface ClientWithRelations extends Client {
 
 interface ClientDetailProps {
   client: ClientWithRelations;
+  users: Pick<User, "id" | "name">[];
 }
 
 const statusLabels: Record<string, string> = {
@@ -67,8 +70,9 @@ const orderStatusLabels: Record<string, string> = {
   CANCELLED: "בוטל",
 };
 
-export function ClientDetail({ client }: ClientDetailProps) {
+export function ClientDetail({ client, users }: ClientDetailProps) {
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -82,6 +86,13 @@ export function ClientDetail({ client }: ClientDetailProps) {
                 <Badge variant={statusVariants[client.status] ?? "outline"}>
                   {statusLabels[client.status] ?? client.status}
                 </Badge>
+                <button
+                  onClick={() => setEditDialogOpen(true)}
+                  className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+                >
+                  <PencilIcon className="h-4 w-4 ml-1" />
+                  עריכה
+                </button>
               </div>
               {client.company && (
                 <p className="text-muted-foreground">{client.company}</p>
@@ -230,6 +241,13 @@ export function ClientDetail({ client }: ClientDetailProps) {
         clientId={client.id}
         open={activityDialogOpen}
         onOpenChange={setActivityDialogOpen}
+      />
+
+      <EditClientDialog
+        client={client}
+        users={users}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
       />
     </div>
   );
