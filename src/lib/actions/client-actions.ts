@@ -5,6 +5,26 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import type { ClientSource, ClientStatus } from "@/generated/prisma";
 
+export async function createLeadQuick(formData: FormData) {
+  const name = formData.get("name") as string;
+  const company = (formData.get("company") as string) || null;
+  const phone = (formData.get("phone") as string) || null;
+  const notes = (formData.get("note") as string) || null;
+
+  await prisma.client.create({
+    data: {
+      name,
+      company,
+      phone,
+      notes,
+      source: "INBOUND",
+      status: "LEAD",
+    },
+  });
+
+  revalidatePath("/");
+}
+
 export async function createClient(formData: FormData) {
   const name = formData.get("name") as string;
   const company = formData.get("company") as string | null;

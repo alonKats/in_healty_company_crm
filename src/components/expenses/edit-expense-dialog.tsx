@@ -35,10 +35,10 @@ interface EditExpenseDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function toDatetimeLocal(isoString: string): string {
+function toDateOnly(isoString: string): string {
   const d = new Date(isoString);
   const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
 export function EditExpenseDialog({ expense, open, onOpenChange }: EditExpenseDialogProps) {
@@ -68,8 +68,8 @@ export function EditExpenseDialog({ expense, open, onOpenChange }: EditExpenseDi
               <Input
                 id="edit-date"
                 name="date"
-                type="datetime-local"
-                defaultValue={toDatetimeLocal(expense.date)}
+                type="date"
+                defaultValue={toDateOnly(expense.date)}
                 required
               />
             </div>

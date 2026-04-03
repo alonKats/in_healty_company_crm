@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { QuickAddLead } from "./quick-add-lead";
 
 interface Lead {
   id: string;
@@ -89,7 +90,10 @@ function PipelineCard({ href, title, subtitle, days, borderColor, extra }: Pipel
 export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
   return (
     <div>
-      <h2 className="text-lg font-bold text-slate-800 mb-4">תהליך מכירה (Pipeline)</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-bold text-slate-800">תהליך מכירה (Pipeline)</h2>
+        <QuickAddLead />
+      </div>
       <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(5, minmax(0, 1fr))" }}>
         <Column title="ליד חדש" count={pipeline.newLeads.length} dotColor="bg-slate-300" labelColor="text-slate-600">
           {pipeline.newLeads.map((lead) => (

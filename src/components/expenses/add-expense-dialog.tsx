@@ -29,7 +29,7 @@ interface AddExpenseDialogProps {
 function todayDateValue(): string {
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
 export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) {
@@ -59,7 +59,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
               <Input
                 id="date"
                 name="date"
-                type="datetime-local"
+                type="date"
                 defaultValue={todayDateValue()}
                 required
               />

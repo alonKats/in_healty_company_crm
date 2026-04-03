@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,78 @@ import {
 } from "@/components/ui/select";
 import { Trash2Icon, PlusIcon } from "lucide-react";
 import type { Client, Service, Category, CostItem } from "@/generated/prisma";
+
+// Searchable combobox
+interface SearchableSelectProps {
+  items: { id: string; label: string }[];
+  value: string;
+  onSelect: (id: string) => void;
+  placeholder?: string;
+  clearLabel?: string;
+}
+
+function SearchableSelect({ items, value, onSelect, placeholder = "הקלד לחיפוש...", clearLabel }: SearchableSelectProps) {
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const selectedLabel = items.find((i) => i.id === value)?.label ?? "";
+
+  const filtered = items.filter((item) =>
+    item.label.toLowerCase().includes(search.toLowerCase())
+  );
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+        setSearch("");
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={ref}>
+      <input
+        type="text"
+        value={open ? search : selectedLabel}
+        onChange={(e) => { setSearch(e.target.value); setOpen(true); }}
+        onFocus={() => { setOpen(true); setSearch(""); }}
+        placeholder={placeholder}
+        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+      />
+      {open && (
+        <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg">
+          {clearLabel && (
+            <button
+              type="button"
+              onClick={() => { onSelect(""); setOpen(false); setSearch(""); }}
+              className="w-full text-right px-3 py-2 text-sm text-slate-400 hover:bg-slate-50"
+            >
+              {clearLabel}
+            </button>
+          )}
+          {filtered.length === 0 ? (
+            <div className="px-3 py-2 text-sm text-slate-400">לא נמצאו תוצאות</div>
+          ) : (
+            filtered.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => { onSelect(item.id); setOpen(false); setSearch(""); }}
+                className={`w-full text-right px-3 py-2 text-sm hover:bg-teal-50 ${item.id === value ? "bg-teal-50 font-medium text-teal-700" : "text-slate-800"}`}
+              >
+                {item.label}
+              </button>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface ServiceWithRelations extends Service {
   category: Category;
@@ -157,19 +229,12 @@ export function OrderForm({
           {/* Client */}
           <div className="space-y-1.5">
             <Label>לקוח *</Label>
-            <Select value={clientId} onValueChange={(v) => v && setClientId(v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="בחר לקוח" />
-              </SelectTrigger>
-              <SelectContent>
-                {clients.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.name}
-                    {c.company ? ` — ${c.company}` : ""}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              items={clients.map((c) => ({ id: c.id, label: c.name + (c.company ? ` — ${c.company}` : "") }))}
+              value={clientId}
+              onSelect={(id) => setClientId(id)}
+              placeholder="הקלד שם לקוח..."
+            />
           </div>
 
           {/* Type */}
@@ -238,22 +303,13 @@ export function OrderForm({
                   {/* Service picker */}
                   <div className="space-y-1.5">
                     <Label>שירות (אופציונלי)</Label>
-                    <Select
+                    <SearchableSelect
+                      items={services.map((s) => ({ id: s.id, label: s.name }))}
                       value={item.serviceId}
-                      onValueChange={(v) => handleServiceSelect(item.id, v ?? "")}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="בחר שירות" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="">ללא שירות</SelectItem>
-                        {services.map((s) => (
-                          <SelectItem key={s.id} value={s.id}>
-                            {s.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      onSelect={(id) => handleServiceSelect(item.id, id)}
+                      placeholder="הקלד שם שירות..."
+                      clearLabel="ללא שירות"
+                    />
                   </div>
 
                   {/* Description */}

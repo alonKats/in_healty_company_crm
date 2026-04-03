@@ -4,12 +4,15 @@ export async function getDashboardData() {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
   const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   // KPIs
   const [
     paidPaymentsThisMonth,
+    paidPaymentsLastMonth,
     openQuotes,
     pendingPaymentsData,
     activeOrdersCount,
@@ -20,6 +23,13 @@ export async function getDashboardData() {
       where: {
         status: "PAID",
         date: { gte: startOfMonth, lte: endOfMonth },
+      },
+      _sum: { amount: true },
+    }),
+    prisma.payment.aggregate({
+      where: {
+        status: "PAID",
+        date: { gte: startOfLastMonth, lte: endOfLastMonth },
       },
       _sum: { amount: true },
     }),
@@ -46,12 +56,16 @@ export async function getDashboardData() {
   ]);
 
   const monthlyRevenue = Number(paidPaymentsThisMonth._sum.amount ?? 0);
+  const lastMonthRevenue = Number(paidPaymentsLastMonth._sum.amount ?? 0);
   const activeQuotesValue = Number(openQuotes._sum.totalAmount ?? 0);
   const pendingPayments = Number(pendingPaymentsData._sum.amount ?? 0);
   const conversionRate =
     quotesThisMonth > 0
       ? Math.round((approvedQuotesThisMonth / quotesThisMonth) * 100)
       : 0;
+
+  const hebrewMonthNames = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+  const currentMonthName = hebrewMonthNames[now.getMonth()] ?? "";
 
   // Pipeline data
   const [
@@ -188,6 +202,8 @@ export async function getDashboardData() {
   return {
     kpis: {
       monthlyRevenue,
+      lastMonthRevenue,
+      currentMonthName,
       activeQuotesValue,
       pendingPayments,
       activeOrdersCount,

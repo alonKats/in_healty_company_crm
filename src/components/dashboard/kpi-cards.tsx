@@ -2,6 +2,8 @@ import { TrendingUp, FileText, Clock, ShoppingCart, BarChart2 } from "lucide-rea
 
 interface Kpis {
   monthlyRevenue: number;
+  lastMonthRevenue: number;
+  currentMonthName: string;
   activeQuotesValue: number;
   pendingPayments: number;
   activeOrdersCount: number;
@@ -12,6 +14,13 @@ function formatCurrency(amount: number) {
   return `₪${amount.toLocaleString("he-IL", { maximumFractionDigits: 0 })}`;
 }
 
+function revenueChange(current: number, previous: number): { pct: number; direction: "up" | "down" | "flat" } | null {
+  if (previous === 0) return null;
+  const pct = Math.round(((current - previous) / previous) * 100);
+  if (pct === 0) return { pct: 0, direction: "flat" };
+  return { pct: Math.abs(pct), direction: pct > 0 ? "up" : "down" };
+}
+
 interface KpiCardProps {
   label: string;
   value: string | number;
@@ -20,9 +29,10 @@ interface KpiCardProps {
   iconColor: string;
   badge?: string;
   badgeColor?: string;
+  comparison?: React.ReactNode;
 }
 
-function KpiCard({ label, value, icon: Icon, iconBg, iconColor, badge, badgeColor }: KpiCardProps) {
+function KpiCard({ label, value, icon: Icon, iconBg, iconColor, badge, badgeColor, comparison }: KpiCardProps) {
   return (
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
       <div className="flex justify-between items-start">
@@ -38,22 +48,35 @@ function KpiCard({ label, value, icon: Icon, iconBg, iconColor, badge, badgeColo
       <div className="mt-4">
         <span className="text-slate-500 text-xs font-medium block">{label}</span>
         <span className="text-2xl font-bold text-slate-800">{value}</span>
+        {comparison && (
+          <span className="block text-xs mt-1">{comparison}</span>
+        )}
       </div>
     </div>
   );
 }
 
 export function KpiCards({ kpis }: { kpis: Kpis }) {
+  const change = revenueChange(kpis.monthlyRevenue, kpis.lastMonthRevenue);
+
+  const revenueComparison = change ? (
+    <span className={change.direction === "up" ? "text-green-600 font-semibold" : change.direction === "down" ? "text-red-500 font-semibold" : "text-slate-400"}>
+      {change.direction === "up" ? "▲" : change.direction === "down" ? "▼" : "—"}{" "}
+      {change.pct}% מהחודש הקודם
+    </span>
+  ) : (
+    <span className="text-slate-400">אין נתוני השוואה</span>
+  );
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
       <KpiCard
-        label="הכנסות החודש"
+        label={`הכנסות ${kpis.currentMonthName}`}
         value={formatCurrency(kpis.monthlyRevenue)}
         icon={TrendingUp}
         iconBg="bg-teal-50"
         iconColor="text-teal-600"
-        badge="+12%"
-        badgeColor="text-green-600 bg-green-50"
+        comparison={revenueComparison}
       />
       <KpiCard
         label="הצעות פתוחות"
@@ -88,8 +111,8 @@ export function KpiCards({ kpis }: { kpis: Kpis }) {
         icon={BarChart2}
         iconBg="bg-teal-50"
         iconColor="text-teal-600"
-        badge="+4.2%"
-        badgeColor="text-green-600 bg-green-50"
+        badge={`${kpis.currentMonthName}`}
+        badgeColor="text-slate-400 bg-slate-50"
       />
     </div>
   );
