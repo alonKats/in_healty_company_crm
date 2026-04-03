@@ -103,6 +103,15 @@ async function main() {
     // חבילות (Packages)
     { name: "חודש בריאות", categoryId: "cat-health-month", basePrice: 24350 },
     { name: "יום בריאות", categoryId: "cat-health-day", basePrice: 44350 },
+    // 2025 additions — services not in Q1 2026 catalog
+    { name: "עמדת סחלב ומתוקים", categoryId: "cat-stands", basePrice: 7050 },
+    { name: "יעוץ תזונתי", categoryId: "cat-medical", basePrice: 4500 },
+    { name: "עמדת אסאי", categoryId: "cat-stands", basePrice: 4500 },
+    { name: "סדנת דיטוקס", categoryId: "cat-food-workshops", basePrice: 3500 },
+    { name: "רופאת עור", categoryId: "cat-medical", basePrice: 10250 },
+    { name: "סדנת חטיפי אנרגיה", categoryId: "cat-food-workshops", basePrice: 3500 },
+    { name: "סדנאות קיימות", categoryId: "cat-external-workshops", basePrice: 5000 },
+    { name: "שבוע בריאות", categoryId: "cat-health-month", basePrice: 8850 },
   ];
 
   const serviceMap = new Map<string, string>(); // name -> id
@@ -357,6 +366,253 @@ async function main() {
 
   let orderCount = 0;
   for (const group of sales2026) {
+    const clientRecord = await prisma.client.findFirst({
+      where: { name: group.client },
+    });
+
+    const clientId = clientRecord?.id ?? (
+      await prisma.client.create({
+        data: {
+          name: group.client,
+          status: "ACTIVE",
+          source: "COLD_OUTREACH",
+          assignedToId: admin.id,
+        },
+      })
+    ).id;
+
+    const totalAmount = group.items.reduce((sum, i) => sum + i.amount, 0);
+    const eventDate = new Date(group.year, group.month - 1, 15); // mid-month
+
+    await prisma.order.create({
+      data: {
+        clientId,
+        status: "COMPLETED",
+        type: group.orderType,
+        eventDate,
+        totalAmount,
+        items: {
+          create: group.items.map((item) => ({
+            description: item.serviceName,
+            quantity: item.quantity,
+            unitPrice: Math.round(item.amount / item.quantity),
+            total: item.amount,
+            serviceId: serviceMap.get(item.serviceName),
+          })),
+        },
+        payments: {
+          create: {
+            amount: totalAmount,
+            method: "TRANSFER",
+            date: eventDate,
+            status: "PAID",
+          },
+        },
+      },
+    });
+    orderCount++;
+  }
+
+  // =============================================
+  // 2025 INCOME DATA — 44 valid sales (3 garbage entries filtered out)
+  // Filtered: "416", "683", "3700" (numeric = misaligned column data)
+  //           "כולל דקסל:" (subtotal label)
+  // Client fuzzy matching: "סודה סטרים - אשקלון" → "סודה סטרים", etc.
+  // =============================================
+
+  const sales2025: SaleGroup[] = [
+    // ===== JANUARY 2025 =====
+    {
+      month: 1, year: 2025, client: "ווסט פארמה", orderType: "SINGLE",
+      items: [{ serviceName: "עמדת סחלב ומתוקים", quantity: 1, amount: 7050 }],
+    },
+    {
+      month: 1, year: 2025, client: "Hpe", orderType: "SINGLE",
+      items: [{ serviceName: "סדנת רוקחות", quantity: 1, amount: 3950 }],
+    },
+    {
+      month: 1, year: 2025, client: "cloudinary", orderType: "BUNDLE",
+      items: [{ serviceName: "חודש בריאות", quantity: 1, amount: 41883, isBundleHeader: true }],
+    },
+    {
+      month: 1, year: 2025, client: "ריבון", orderType: "SINGLE",
+      items: [{ serviceName: "דוכן מרקים", quantity: 1, amount: 11950 }],
+    },
+
+    // ===== FEBRUARY 2025 =====
+    {
+      month: 2, year: 2025, client: "We Work", orderType: "SINGLE",
+      items: [{ serviceName: "סדנת חטיפי אנרגיה", quantity: 1, amount: 3500 }],
+    },
+    {
+      month: 2, year: 2025, client: "דקסל", orderType: "SINGLE",
+      items: [{ serviceName: "יעוץ תזונתי", quantity: 2, amount: 4500 }],
+    },
+    {
+      month: 2, year: 2025, client: "IBM", orderType: "SINGLE",
+      items: [{ serviceName: "דוכן מרקים", quantity: 2, amount: 7200 }],
+    },
+    {
+      month: 2, year: 2025, client: "דרייבס", orderType: "SINGLE",
+      items: [{ serviceName: "דוכן מרקים", quantity: 1, amount: 5550 }],
+    },
+    {
+      month: 2, year: 2025, client: "Datarails", orderType: "SINGLE",
+      items: [{ serviceName: "עמדת אסאי", quantity: 1, amount: 4550 }],
+    },
+    {
+      month: 2, year: 2025, client: "סופרקום", orderType: "SINGLE",
+      items: [{ serviceName: "סדנת חטיפי אנרגיה", quantity: 1, amount: 3950 }],
+    },
+    {
+      month: 2, year: 2025, client: "אייטק מערכות", orderType: "SINGLE",
+      items: [{ serviceName: "הרצאה בנושא מניעת סרטן", quantity: 1, amount: 2950 }],
+    },
+    {
+      month: 2, year: 2025, client: "ויסמן פרידמן", orderType: "SINGLE",
+      items: [{ serviceName: "דוכן מרקים", quantity: 1, amount: 5050 }],
+    },
+
+    // ===== MARCH 2025 =====
+    {
+      month: 3, year: 2025, client: "בקטוכם", orderType: "SINGLE",
+      items: [{ serviceName: "סדנת מתוקים בריאים", quantity: 2, amount: 7290 }],
+    },
+    {
+      month: 3, year: 2025, client: "איגודן", orderType: "SINGLE",
+      items: [{ serviceName: "סדנת מתוקים בריאים", quantity: 1, amount: 3600 }],
+    },
+
+    // ===== APRIL 2025 =====
+    {
+      month: 4, year: 2025, client: "Ikea", orderType: "SINGLE",
+      items: [{ serviceName: "סדנאות קיימות", quantity: 1, amount: 15150 }],
+    },
+    {
+      month: 4, year: 2025, client: "טכניון", orderType: "SINGLE",
+      items: [{ serviceName: "עמדת אסאי", quantity: 1, amount: 5800 }],
+    },
+
+    // ===== MAY 2025 =====
+    {
+      month: 5, year: 2025, client: "טאואר", orderType: "SINGLE",
+      items: [{ serviceName: "דוכן סמודי בולס", quantity: 1, amount: 48750 }],
+    },
+    {
+      month: 5, year: 2025, client: "סודה סטרים", orderType: "BUNDLE",
+      items: [{ serviceName: "שבוע בריאות", quantity: 1, amount: 135300, isBundleHeader: true }],
+    },
+    {
+      month: 5, year: 2025, client: "בנפיט עמותה מילואים", orderType: "SINGLE",
+      items: [{ serviceName: "עמדת אסאי", quantity: 1, amount: 2750 }],
+    },
+    {
+      month: 5, year: 2025, client: "מדטרוניק", orderType: "SINGLE",
+      items: [{ serviceName: "עמדת אסאי", quantity: 1, amount: 4900 }],
+    },
+    {
+      month: 5, year: 2025, client: "רזונטיקס", orderType: "SINGLE",
+      items: [{ serviceName: "דוכן סמודי בולס", quantity: 2, amount: 12900 }],
+    },
+    {
+      month: 5, year: 2025, client: "RTS אסם", orderType: "SINGLE",
+      items: [{ serviceName: "סדנת חטיפי אנרגיה", quantity: 2, amount: 6700 }],
+    },
+
+    // ===== JUNE 2025 =====
+    {
+      month: 6, year: 2025, client: "סודה סטרים", orderType: "BUNDLE",
+      items: [{ serviceName: "יום בריאות", quantity: 1, amount: 14140, isBundleHeader: true }],
+    },
+    {
+      month: 6, year: 2025, client: "ג'וינט", orderType: "SINGLE",
+      items: [{ serviceName: "רופאת עור", quantity: 1, amount: 10250 }],
+    },
+    {
+      month: 6, year: 2025, client: "פנטרה", orderType: "SINGLE",
+      items: [{ serviceName: "מעסים", quantity: 4, amount: 5310 }],
+    },
+    {
+      month: 6, year: 2025, client: "Datarails", orderType: "SINGLE",
+      items: [{ serviceName: "סדנת מתוקים בריאים", quantity: 1, amount: 2500 }],
+    },
+    {
+      month: 6, year: 2025, client: "פיינל", orderType: "SINGLE",
+      items: [{ serviceName: "דוכן שייקים", quantity: 1, amount: 12650 }],
+    },
+
+    // ===== JULY 2025 =====
+    {
+      month: 7, year: 2025, client: "ג'וינט", orderType: "SINGLE",
+      items: [{ serviceName: "רופאת עור", quantity: 1, amount: 3400 }],
+    },
+
+    // ===== SEPTEMBER 2025 =====
+    {
+      month: 9, year: 2025, client: "HiBob", orderType: "BUNDLE",
+      items: [{ serviceName: "שבוע בריאות", quantity: 1, amount: 8950, isBundleHeader: true }],
+    },
+    {
+      month: 9, year: 2025, client: "מארוול", orderType: "SINGLE",
+      items: [{ serviceName: "דוכן שייקים", quantity: 2, amount: 5250 }],
+    },
+    {
+      month: 9, year: 2025, client: "Gong", orderType: "SINGLE",
+      items: [{ serviceName: "דוכן שייקים", quantity: 1, amount: 6450 }],
+    },
+    {
+      month: 9, year: 2025, client: "קוגניט / ורינט", orderType: "SINGLE",
+      items: [{ serviceName: "דוכן שייקים", quantity: 1, amount: 3200 }],
+    },
+    {
+      month: 9, year: 2025, client: "הרמן", orderType: "SINGLE",
+      items: [{ serviceName: "עמדת אסאי", quantity: 1, amount: 5900 }],
+    },
+    {
+      month: 9, year: 2025, client: "כנס ישראל כללית", orderType: "SINGLE",
+      items: [{ serviceName: "דוכן שייקים", quantity: 2, amount: 5350 }],
+    },
+
+    // ===== NOVEMBER 2025 =====
+    {
+      month: 11, year: 2025, client: "סטרטסיס", orderType: "SINGLE",
+      items: [{ serviceName: "סדנת שייקים", quantity: 1, amount: 34400 }],
+    },
+    {
+      month: 11, year: 2025, client: "אורפק", orderType: "SINGLE",
+      items: [{ serviceName: "רופאת עור", quantity: 1, amount: 37500 }],
+    },
+    {
+      month: 11, year: 2025, client: "אלביט מערכות", orderType: "BUNDLE",
+      items: [{ serviceName: "יום בריאות", quantity: 1, amount: 14400, isBundleHeader: true }],
+    },
+    {
+      month: 11, year: 2025, client: "Ikea", orderType: "BUNDLE",
+      items: [{ serviceName: "חודש בריאות", quantity: 1, amount: 22400, isBundleHeader: true }],
+    },
+    {
+      month: 11, year: 2025, client: "דל", orderType: "BUNDLE",
+      items: [{ serviceName: "שבוע בריאות", quantity: 1, amount: 6500, isBundleHeader: true }],
+    },
+    {
+      month: 11, year: 2025, client: "דל מכירות", orderType: "BUNDLE",
+      items: [{ serviceName: "יום בריאות", quantity: 1, amount: 2750, isBundleHeader: true }],
+    },
+    {
+      month: 11, year: 2025, client: "סאפיינס", orderType: "BUNDLE",
+      items: [{ serviceName: "שבוע בריאות", quantity: 1, amount: 8850, isBundleHeader: true }],
+    },
+    {
+      month: 11, year: 2025, client: "איטורו", orderType: "BUNDLE",
+      items: [{ serviceName: "שבוע בריאות", quantity: 1, amount: 4100, isBundleHeader: true }],
+    },
+    {
+      month: 11, year: 2025, client: "KLA", orderType: "SINGLE",
+      items: [{ serviceName: "רופאת עור", quantity: 2, amount: 18300 }],
+    },
+  ];
+
+  for (const group of sales2025) {
     const clientRecord = await prisma.client.findFirst({
       where: { name: group.client },
     });
