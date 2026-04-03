@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 interface Lead {
   id: string;
@@ -48,17 +47,22 @@ function formatCurrency(amount: number) {
 function Column({
   title,
   count,
+  color,
   children,
 }: {
   title: string;
   count: number;
+  color: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="min-w-[220px] flex-1">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="font-semibold text-sm">{title}</span>
-        <Badge variant="secondary">{count}</Badge>
+      <div className="flex items-center gap-2 mb-3 rounded-md px-2 py-1.5 bg-white border border-gray-200">
+        <span className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+        <span className="font-semibold text-sm flex-1">{title}</span>
+        <span className="inline-flex items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs font-medium w-5 h-5">
+          {count}
+        </span>
       </div>
       <div className="space-y-2">{children}</div>
     </div>
@@ -95,7 +99,7 @@ export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
   return (
     <div className="overflow-x-auto">
       <div className="flex gap-4 pb-4 min-w-max">
-        <Column title="ליד חדש" count={pipeline.newLeads.length}>
+        <Column title="ליד חדש" count={pipeline.newLeads.length} color="#9CA3AF">
           {pipeline.newLeads.map((lead) => (
             <PipelineCard
               key={lead.id}
@@ -107,7 +111,7 @@ export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
           ))}
         </Column>
 
-        <Column title="הצעה נשלחה" count={pipeline.sentQuotes.length}>
+        <Column title="הצעה נשלחה" count={pipeline.sentQuotes.length} color="#F59E0B">
           {pipeline.sentQuotes.map((q) => (
             <PipelineCard
               key={q.id}
@@ -119,7 +123,7 @@ export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
           ))}
         </Column>
 
-        <Column title="הצעה אושרה" count={pipeline.approvedQuotes.length}>
+        <Column title="הצעה אושרה" count={pipeline.approvedQuotes.length} color="#22C55E">
           {pipeline.approvedQuotes.map((q) => (
             <PipelineCard
               key={q.id}
@@ -131,7 +135,7 @@ export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
           ))}
         </Column>
 
-        <Column title="הזמנה פעילה" count={pipeline.activeOrders.length}>
+        <Column title="הזמנה פעילה" count={pipeline.activeOrders.length} color="#3B82F6">
           {pipeline.activeOrders.map((o) => (
             <PipelineCard
               key={o.id}
@@ -143,7 +147,7 @@ export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
           ))}
         </Column>
 
-        <Column title="בוצע" count={pipeline.completedUnpaid.length}>
+        <Column title="בוצע" count={pipeline.completedUnpaid.length} color="#2A9D8F">
           {pipeline.completedUnpaid.map((o) => (
             <PipelineCard
               key={o.id}

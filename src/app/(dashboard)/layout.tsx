@@ -17,7 +17,7 @@ export default async function DashboardLayout({
   return (
     <DashboardClient userName={session.user.name} role={session.user.role}>
       <Sidebar role={session.user.role} />
-      <main className="mr-56 mt-14 p-6">{children}</main>
+      <main className="mr-56 mt-14 min-h-screen p-6 bg-[#F4F4F5]">{children}</main>
     </DashboardClient>
   );
 }

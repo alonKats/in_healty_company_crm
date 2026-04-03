@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -123,9 +122,14 @@ export function ServiceList({ services }: ServiceListProps) {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={service.status === "ACTIVE" ? "default" : "outline"}>
+                        <span className={cn(
+                          "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+                          service.status === "ACTIVE"
+                            ? "bg-green-100 text-green-700 border-green-200"
+                            : "bg-gray-100 text-gray-700 border-gray-200"
+                        )}>
                           {service.status === "ACTIVE" ? "פעיל" : "לא פעיל"}
-                        </Badge>
+                        </span>
                       </TableCell>
                     </TableRow>
                   );

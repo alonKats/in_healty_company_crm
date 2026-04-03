@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -33,11 +32,11 @@ const statusLabels: Record<string, string> = {
   CANCELLED: "בוטלה",
 };
 
-const statusVariants: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
-  CONFIRMED: "default",
-  IN_PROGRESS: "default",
-  COMPLETED: "secondary",
-  CANCELLED: "destructive",
+const statusColors: Record<string, string> = {
+  CONFIRMED: "bg-green-100 text-green-700 border-green-200",
+  IN_PROGRESS: "bg-blue-100 text-blue-700 border-blue-200",
+  COMPLETED: "bg-gray-100 text-gray-700 border-gray-200",
+  CANCELLED: "bg-red-100 text-red-700 border-red-200",
 };
 
 const typeLabels: Record<string, string> = {
@@ -57,11 +56,11 @@ function getPaymentStatus(payments: Pick<Payment, "id" | "status">[]): string {
   return "ממתין";
 }
 
-function getPaymentVariant(payments: Pick<Payment, "id" | "status">[]): "default" | "secondary" | "outline" {
-  if (payments.length === 0) return "outline";
+function getPaymentColor(payments: Pick<Payment, "id" | "status">[]): string {
+  if (payments.length === 0) return "bg-gray-100 text-gray-700 border-gray-200";
   const allPaid = payments.every((p) => p.status === "PAID");
-  if (allPaid) return "default";
-  return "secondary";
+  if (allPaid) return "bg-green-100 text-green-700 border-green-200";
+  return "bg-amber-100 text-amber-700 border-amber-200";
 }
 
 export function OrderList({ orders }: OrderListProps) {
@@ -123,17 +122,23 @@ export function OrderList({ orders }: OrderListProps) {
                       {formatDate(order.eventDate)}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={statusVariants[order.status] ?? "outline"}>
+                      <span className={cn(
+                        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+                        statusColors[order.status] ?? "bg-gray-100 text-gray-700 border-gray-200"
+                      )}>
                         {statusLabels[order.status] ?? order.status}
-                      </Badge>
+                      </span>
                     </TableCell>
                     <TableCell className="text-sm font-medium">
                       ₪{Number(order.totalAmount).toLocaleString()}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getPaymentVariant(order.payments)}>
+                      <span className={cn(
+                        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+                        getPaymentColor(order.payments)
+                      )}>
                         {getPaymentStatus(order.payments)}
-                      </Badge>
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))}

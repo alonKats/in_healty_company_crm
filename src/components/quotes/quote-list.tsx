@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -34,12 +33,12 @@ const statusLabels: Record<string, string> = {
   EXPIRED: "פגה",
 };
 
-const statusVariants: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
-  DRAFT: "secondary",
-  SENT: "default",
-  APPROVED: "default",
-  REJECTED: "destructive",
-  EXPIRED: "outline",
+const statusColors: Record<string, string> = {
+  DRAFT: "bg-gray-100 text-gray-700 border-gray-200",
+  SENT: "bg-amber-100 text-amber-700 border-amber-200",
+  APPROVED: "bg-green-100 text-green-700 border-green-200",
+  REJECTED: "bg-red-100 text-red-700 border-red-200",
+  EXPIRED: "bg-gray-100 text-gray-700 border-gray-200",
 };
 
 function formatDate(date: Date | null | undefined): string {
@@ -115,9 +114,12 @@ export function QuoteList({ quotes }: QuoteListProps) {
                       {quote.assignedTo?.name ?? "—"}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={statusVariants[quote.status] ?? "outline"}>
+                      <span className={cn(
+                        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+                        statusColors[quote.status] ?? "bg-gray-100 text-gray-700 border-gray-200"
+                      )}>
                         {statusLabels[quote.status] ?? quote.status}
-                      </Badge>
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))}

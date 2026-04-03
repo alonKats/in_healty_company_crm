@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -43,10 +42,10 @@ const statusLabels: Record<string, string> = {
   DORMANT: "רדום",
 };
 
-const statusVariants: Record<string, "default" | "secondary" | "outline"> = {
-  LEAD: "secondary",
-  ACTIVE: "default",
-  DORMANT: "outline",
+const statusColors: Record<string, string> = {
+  LEAD: "bg-amber-100 text-amber-700 border-amber-200",
+  ACTIVE: "bg-green-100 text-green-700 border-green-200",
+  DORMANT: "bg-red-100 text-red-700 border-red-200",
 };
 
 function daysSince(date: Date | string): number {
@@ -164,9 +163,12 @@ export function ClientList({ clients, users }: ClientListProps) {
                         {client.assignedTo?.name ?? "—"}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={statusVariants[client.status] ?? "outline"}>
+                        <span className={cn(
+                          "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+                          statusColors[client.status] ?? "bg-gray-100 text-gray-700 border-gray-200"
+                        )}>
                           {statusLabels[client.status] ?? client.status}
-                        </Badge>
+                        </span>
                       </TableCell>
                     </TableRow>
                   );

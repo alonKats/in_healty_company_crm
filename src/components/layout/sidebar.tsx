@@ -19,9 +19,9 @@ export function Sidebar({ role }: { role: Role }) {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed right-0 top-0 z-30 h-screen w-56 border-l bg-white">
-      <div className="flex h-14 items-center justify-center border-b">
-        <h1 className="text-lg font-bold text-primary">בחברה בריאה</h1>
+    <aside className="fixed right-0 top-0 z-30 h-screen w-56 border-l" style={{ backgroundColor: "#2A9D8F", borderColor: "#227a6e" }}>
+      <div className="flex h-14 items-center justify-center border-b" style={{ borderColor: "#227a6e" }}>
+        <h1 className="text-lg font-bold text-white">בחברה בריאה</h1>
       </div>
       <nav className="space-y-1 p-3">
         {navItems
@@ -34,8 +34,11 @@ export function Sidebar({ role }: { role: Role }) {
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                  isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  isActive
+                    ? "text-white"
+                    : "text-white/70 hover:text-white"
                 )}
+                style={isActive ? { backgroundColor: "#3ab5a5" } : undefined}
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
