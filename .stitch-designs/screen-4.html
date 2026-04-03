@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>בחברה בריאה - ניהול הוצאות</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                DEFAULT: "#2A9D8F",
+                dark: "#1E7167"
+              },
+              accent: {
+                DEFAULT: "#E76F51",
+                dark: "#C55D43"
+              }
+            },
+            borderRadius: {
+              "DEFAULT": "0.25rem",
+              "lg": "0.5rem",
+              "xl": "0.75rem",
+              "full": "9999px"
+            },
+            fontFamily: {
+              headline: ["Rubik"],
+              body: ["Rubik"],
+              label: ["Rubik"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Rubik', sans-serif; background-color: #F4F4F5; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="antialiased">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed right-0 top-0 h-screen flex flex-col z-50 overflow-y-auto overflow-x-hidden rtl bg-teal-600 dark:bg-teal-900 shadow-xl w-[220px] font-sans border-l border-teal-700/50 dark:border-slate-800">
+<div class="p-6 flex flex-col items-center gap-2 border-b border-teal-500/30">
+<div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-teal-600 shadow-inner">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div class="text-center">
+<h1 class="text-white text-xl font-bold tracking-tight">בחברה בריאה</h1>
+<p class="text-teal-100 text-xs opacity-80">ניהול בריאות ארגונית</p>
+</div>
+</div>
+<nav class="flex-1 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>לוח בקרה</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>לקוחות</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span>הצעות מחיר</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span>הזמנות</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span>מוצרים</span>
+</a>
+<!-- Active State: Expenses -->
+<a class="flex items-center gap-3 px-4 py-3 text-white bg-teal-700 dark:bg-teal-800 border-r-4 border-orange-400 Active: opacity-90 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-bold">הוצאות</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>הגדרות</span>
+</a>
+</nav>
+</aside>
+<!-- TopNavBar (Shared Component) -->
+<header class="fixed top-0 left-0 right-[220px] h-16 flex items-center justify-between px-8 z-40 rtl bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-4">
+<div class="relative">
+<input class="bg-slate-100 dark:bg-slate-900 border-none rounded-full py-1.5 pr-10 pl-4 text-sm focus:ring-2 focus:ring-teal-500 transition-all w-64" placeholder="חיפוש..." type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">שלום, <span class="font-bold text-teal-600">אורן</span></span>
+<div class="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700">
+<span class="material-symbols-outlined text-xl">person</span>
+</div>
+</div>
+<button class="text-slate-600 dark:text-slate-400 hover:text-orange-500 transition-colors Active: scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="mr-[220px] pt-24 pb-12 px-8 min-h-screen">
+<!-- Header Section -->
+<section class="flex justify-between items-end mb-8">
+<div>
+<h2 class="text-3xl font-bold text-slate-800 dark:text-white">הוצאות</h2>
+<p class="text-slate-500 text-sm mt-1">ניהול ומעקב אחר הוצאות העסק</p>
+</div>
+<button class="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all shadow-md active:scale-95">
+<span class="material-symbols-outlined">add</span>
+                הוסף הוצאה
+            </button>
+</section>
+<!-- Summary Cards (Bento Grid Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-slate-500 text-xs font-medium mb-1">סה"כ הוצאות החודש</p>
+<h3 class="text-2xl font-bold text-slate-800">₪12,400</h3>
+</div>
+<div class="p-3 bg-teal-50 rounded-lg text-teal-600">
+<span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-slate-500 text-xs font-medium mb-1">לעומת חודש שעבר</p>
+<h3 class="text-2xl font-bold text-slate-800">₪9,800</h3>
+<span class="text-xs text-orange-500 flex items-center gap-1 mt-1 font-medium">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                        26.5%+
+                    </span>
+</div>
+<div class="p-3 bg-orange-50 rounded-lg text-orange-600">
+<span class="material-symbols-outlined text-3xl">history</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-slate-500 text-xs font-medium mb-1">קטגוריה מובילה</p>
+<h3 class="text-2xl font-bold text-slate-800">שכר</h3>
+<p class="text-slate-400 text-xs mt-1">45% מכלל ההוצאות</p>
+</div>
+<div class="p-3 bg-blue-50 rounded-lg text-blue-600">
+<span class="material-symbols-outlined text-3xl">category</span>
+</div>
+</div>
+</section>
+<!-- Filter Bar -->
+<section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 p-4">
+<div class="flex flex-wrap items-center gap-4">
+<div class="flex-1 min-w-[200px]">
+<label class="block text-xs font-bold text-slate-600 mb-1">חיפוש הוצאה</label>
+<div class="relative">
+<input class="w-full border-slate-200 rounded-lg text-sm px-4 py-2 focus:ring-teal-500 focus:border-teal-500" placeholder="שם ספק או תיאור..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+</div>
+</div>
+<div class="w-48">
+<label class="block text-xs font-bold text-slate-600 mb-1">קטגוריה</label>
+<select class="w-full border-slate-200 rounded-lg text-sm px-4 py-2 focus:ring-teal-500 focus:border-teal-500">
+<option>כל הקטגוריות</option>
+<option>שכר</option>
+<option>חומרי גלם</option>
+<option>שכירות</option>
+<option>נסיעות</option>
+<option>שיווק</option>
+<option>ציוד</option>
+</select>
+</div>
+<div class="w-64">
+<label class="block text-xs font-bold text-slate-600 mb-1">טווח תאריכים</label>
+<div class="flex items-center gap-2">
+<input class="w-full border-slate-200 rounded-lg text-xs px-2 py-2 focus:ring-teal-500" type="date"/>
+<span class="text-slate-400">עד</span>
+<input class="w-full border-slate-200 rounded-lg text-xs px-2 py-2 focus:ring-teal-500" type="date"/>
+</div>
+</div>
+<div class="flex items-end self-end h-full">
+<button class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        נקה הכל
+                    </button>
+</div>
+</div>
+</section>
+<!-- Expenses Table -->
+<section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+<table class="w-full text-right border-collapse">
+<thead>
+<tr class="bg-slate-50 border-b border-slate-200">
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">תאריך</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">תיאור</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">קטגוריה</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">סכום</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">אמצעי תשלום</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">פעולות</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4 text-sm text-slate-700">01/03/2024</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-teal-100 text-teal-700 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">payments</span>
+</div>
+<span class="text-sm font-medium text-slate-900">משכורות מרץ</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">שכר</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-slate-900">₪45,000</td>
+<td class="px-6 py-4 text-sm text-slate-600">העברה בנקאית</td>
+<td class="px-6 py-4 text-center">
+<button class="text-slate-400 hover:text-primary transition-colors mx-1"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors mx-1"><span class="material-symbols-outlined text-lg">delete</span></button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4 text-sm text-slate-700">05/03/2024</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">print</span>
+</div>
+<span class="text-sm font-medium text-slate-900">רכישת ציוד משרדי</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">ציוד</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-slate-900">₪1,200</td>
+<td class="px-6 py-4 text-sm text-slate-600">כרטיס אשראי</td>
+<td class="px-6 py-4 text-center">
+<button class="text-slate-400 hover:text-primary transition-colors mx-1"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors mx-1"><span class="material-symbols-outlined text-lg">delete</span></button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4 text-sm text-slate-700">10/03/2024</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-orange-100 text-orange-700 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">campaign</span>
+</div>
+<span class="text-sm font-medium text-slate-900">קמפיין פייסבוק</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700">שיווק</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-slate-900">₪3,500</td>
+<td class="px-6 py-4 text-sm text-slate-600">כרטיס אשראי</td>
+<td class="px-6 py-4 text-center">
+<button class="text-slate-400 hover:text-primary transition-colors mx-1"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors mx-1"><span class="material-symbols-outlined text-lg">delete</span></button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4 text-sm text-slate-700">12/03/2024</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">home_work</span>
+</div>
+<span class="text-sm font-medium text-slate-900">שכירות משרד</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">שכירות</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-slate-900">₪8,000</td>
+<td class="px-6 py-4 text-sm text-slate-600">צ'ק</td>
+<td class="px-6 py-4 text-center">
+<button class="text-slate-400 hover:text-primary transition-colors mx-1"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="text-slate-400 hover:text-red-500 transition-colors mx-1"><span class="material-symbols-outlined text-lg">delete</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination / Footer -->
+<div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+<span class="text-xs text-slate-500 font-medium">מציג 1-4 מתוך 28 הוצאות</span>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white font-medium text-xs">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-slate-600 hover:bg-white transition-colors text-xs font-medium">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-slate-600 hover:bg-white transition-colors text-xs font-medium">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Visual Analytics Row (Bonus Design Quality) -->
+<section class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+<h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">pie_chart</span>
+                    התפלגות הוצאות לפי קטגוריה
+                </h4>
+<div class="flex items-center gap-8 h-40">
+<div class="relative w-32 h-32 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle cx="64" cy="64" fill="transparent" r="50" stroke="#E2E8F0" stroke-width="12"></circle>
+<circle cx="64" cy="64" fill="transparent" r="50" stroke="#2A9D8F" stroke-dasharray="157" stroke-dashoffset="40" stroke-width="12"></circle>
+<circle cx="64" cy="64" fill="transparent" r="50" stroke="#E76F51" stroke-dasharray="157" stroke-dashoffset="140" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-lg font-bold text-slate-800">₪57K</span>
+<span class="text-[10px] text-slate-400">סה"כ</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-xs">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-slate-600">שכר (45%)</span>
+</div>
+<div class="flex items-center gap-2 text-xs">
+<span class="w-3 h-3 rounded-full bg-accent"></span>
+<span class="text-slate-600">שכירות (20%)</span>
+</div>
+<div class="flex items-center gap-2 text-xs">
+<span class="w-3 h-3 rounded-full bg-blue-400"></span>
+<span class="text-slate-600">אחר (35%)</span>
+</div>
+</div>
+</div>
+</div>
+<div class="relative rounded-xl overflow-hidden shadow-lg border border-slate-200">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 p-6 flex flex-col justify-end">
+<p class="text-white text-xs font-medium uppercase opacity-80">תובנת ניהול</p>
+<h4 class="text-white text-lg font-bold">הוצאות השיווק גדלו ב-15% לעומת החודש הקודם.</h4>
+<p class="text-white/80 text-sm mt-1">מומלץ לבחון את יחס ההמרה מקמפיין פייסבוק האחרון.</p>
+</div>
+<img class="w-full h-full object-cover" data-alt="Modern business office interior with blurred charts on a glass wall and warm atmospheric lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmdCRLHTB5UNy_ZpJIJkTk6E88Rb-o7dojDCw-wTffl-CJfZgskdn0CwD6Eq5mufrAhRJr-qH5Jl63JdlNThpOlW5BpsBrW85gKTUKvS3x5tdvWoUHNMgjZlLus4xTuY-ZrF8Pld5jO-ZuQ-mPMdhG0HRNokMrWeF3AKgC0KsPu78Gkr01T2zUm6_KsDdUHZcSmQZJZMx7A6uON_XgjqK0wdPctSRDHpGqR8lkBZtJveMKAuwmVLYzEw4LOKaHI01VlU7PX5CEmLA6"/>
+</div>
+</section>
+</main>
+</body></html>

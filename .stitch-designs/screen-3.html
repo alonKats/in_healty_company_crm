@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>הצעת מחיר חדשה | InHealthy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#2A9D8F',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                            950: '#042f2e',
+                        },
+                        orange: {
+                            500: '#E76F51',
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Rubik"],
+                        "body": ["Rubik"],
+                        "label": ["Rubik"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Rubik', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+<!-- SideNavBar -->
+<aside class="fixed right-0 top-0 h-screen flex flex-col z-50 overflow-y-auto overflow-x-hidden rtl bg-teal-600 dark:bg-teal-900 text-right font-sans antialiased w-[220px] shadow-xl border-l border-teal-700/50 dark:border-slate-800">
+<div class="p-6 flex flex-col items-center gap-2">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-2 overflow-hidden shadow-inner">
+<img alt="InHealthy Logo" data-alt="Stylized teal leaf with a small orange heart icon inside, clean health-focused brand logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3-VY-nrTteK4eom35y-bupJs0Ie3RuGm4-1Wp0JxVs-8TAo_B4nPp37axc4nsMcDh4G0BlADQKmlBNmKuGZQMMDh_-5Ctjd2_1ZA9_qj9eRaVPWtUYwNY-IDgG4e_TV3LcvDzkKG9fjtjlrSHjkDd9xSM4fIQiqDBChDap-VIl3zESfldaEEQKiFewzTPt1VZOhlfw04IJ-yfTCMsGlR33qqTGv0-HbwgOjMW99GfQBn1Oo99SWpEY0H78VkXLawJLcfRao1KHrxc"/>
+</div>
+<div class="text-white text-xl font-bold tracking-tight">בחברה בריאה</div>
+<div class="text-teal-100 text-[10px] opacity-80 uppercase tracking-widest text-center leading-tight">ניהול בריאות ארגונית</div>
+</div>
+<nav class="flex-1 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm font-medium">לוח בקרה</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-sm font-medium">לקוחות</span>
+</a>
+<!-- Active Tab: הצעות מחיר (Quotes) -->
+<a class="flex items-center gap-3 px-4 py-3 text-white bg-teal-700 dark:bg-teal-800 border-r-4 border-orange-400 transition-all opacity-90" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="text-sm font-bold">הצעות מחיר</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="text-sm font-medium">הזמנות</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="text-sm font-medium">מוצרים</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-sm font-medium">הוצאות</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm font-medium">הגדרות</span>
+</a>
+</nav>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 right-[220px] h-16 flex items-center justify-between px-8 z-40 rtl bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="absolute inset-y-0 right-3 flex items-center text-slate-400 group-focus-within:text-teal-600">
+<span class="material-symbols-outlined text-xl" data-icon="search">search</span>
+</span>
+<input class="pr-10 pl-4 py-1.5 bg-slate-100 border-none rounded-full text-sm focus:ring-2 focus:ring-teal-600 transition-all w-64" placeholder="חיפוש חופשי..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 cursor-pointer group hover:scale-95 duration-150">
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-orange-500 transition-colors">אורן</span>
+<div class="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 font-bold border border-teal-200">
+                    א
+                </div>
+</div>
+<button class="text-slate-500 hover:text-red-500 transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="mr-[220px] pt-24 px-10 pb-12">
+<div class="max-w-6xl mx-auto">
+<!-- Page Header -->
+<div class="flex items-center justify-between mb-8">
+<div>
+<h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">הצעת מחיר חדשה</h1>
+<p class="text-slate-500 text-sm mt-1">יצירת הצעת מחיר חדשה עבור לקוחות החברה</p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-2.5 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-100 font-medium transition-all">ביטול</button>
+<button class="px-8 py-2.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 shadow-lg shadow-teal-600/20 font-bold transition-all active:scale-95">שמירת הצעה</button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column (Main Forms) -->
+<div class="lg:col-span-2 space-y-8">
+<!-- Card 1: Quote Details -->
+<div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+<div class="flex items-center gap-2 mb-6 text-teal-600">
+<span class="material-symbols-outlined">assignment</span>
+<h2 class="text-lg font-bold">פרטי ההצעה</h2>
+</div>
+<div class="grid grid-cols-2 gap-6 mb-6">
+<div class="space-y-1.5">
+<label class="text-xs font-bold text-slate-500 block">לקוח</label>
+<select class="w-full border-slate-200 rounded-lg focus:ring-teal-600 focus:border-teal-600 text-sm">
+<option>בחר לקוח...</option>
+<option>הייטק פלוס בע"מ</option>
+<option>מרכז רפואי גליל</option>
+<option>טכנולוגיות בע"מ</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-bold text-slate-500 block">אחראי</label>
+<select class="w-full border-slate-200 rounded-lg focus:ring-teal-600 focus:border-teal-600 text-sm">
+<option>אורן</option>
+<option>דנה</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-6">
+<div class="space-y-1.5">
+<label class="text-xs font-bold text-slate-500 block">מקור</label>
+<select class="w-full border-slate-200 rounded-lg focus:ring-teal-600 focus:border-teal-600 text-sm">
+<option>פניית לקוח</option>
+<option>פניה יזומה</option>
+<option>הפניה</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-bold text-slate-500 block">תאריך אירוע</label>
+<input class="w-full border-slate-200 rounded-lg focus:ring-teal-600 focus:border-teal-600 text-sm" type="date"/>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-bold text-slate-500 block">תוקף עד</label>
+<input class="w-full border-slate-200 rounded-lg focus:ring-teal-600 focus:border-teal-600 text-sm" type="date"/>
+</div>
+</div>
+</div>
+<!-- Card 2: Line Items -->
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+<div class="flex items-center justify-between p-6 border-b border-slate-100">
+<div class="flex items-center gap-2 text-teal-600">
+<span class="material-symbols-outlined">list_alt</span>
+<h2 class="text-lg font-bold">פריטים</h2>
+</div>
+<button class="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-bold text-sm bg-teal-50 px-4 py-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                                הוסף פריט
+                            </button>
+</div>
+<div class="p-6 space-y-4">
+<!-- Item 1 -->
+<div class="p-4 border border-slate-200 rounded-lg bg-slate-50/50 relative group">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">שירות</label>
+<select class="w-full border-slate-200 rounded-lg bg-white text-sm">
+<option>סדנת תזונה נבונה</option>
+</select>
+</div>
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">קטגוריה</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" type="text" value="סדנאות"/>
+</div>
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">תיאור</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" type="text" value="סדנה חווייתית של 3 שעות כולל טעימות"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+<div>
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">כמות</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" type="number" value="2"/>
+</div>
+<div>
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">מחיר ליחידה</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">₪</span>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm pl-7" type="text" value="4,225"/>
+</div>
+</div>
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">הערות</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" placeholder="הערות לפריט..." type="text"/>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-xs text-slate-400">סה"כ פריט:</span>
+<div class="flex items-center gap-2">
+<span class="font-bold text-teal-600">₪8,450</span>
+<span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">25% רווח</span>
+</div>
+</div>
+<button class="text-slate-300 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="p-4 border border-slate-200 rounded-lg bg-slate-50/50 relative group">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">שירות</label>
+<select class="w-full border-slate-200 rounded-lg bg-white text-sm">
+<option>יום בריאות ארגוני</option>
+</select>
+</div>
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">קטגוריה</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" type="text" value="אירועים"/>
+</div>
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">תיאור</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" type="text" value="יום מלא הכולל הרצאות, דוכנים וייעוץ אישי"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+<div>
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">כמות</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" type="number" value="1"/>
+</div>
+<div>
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">מחיר ליחידה</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">₪</span>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm pl-7" type="text" value="15,000"/>
+</div>
+</div>
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">הערות</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" placeholder="הערות לפריט..." type="text"/>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-xs text-slate-400">סה"כ פריט:</span>
+<div class="flex items-center gap-2">
+<span class="font-bold text-teal-600">₪15,000</span>
+<span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">18% רווח</span>
+</div>
+</div>
+<button class="text-slate-300 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="p-4 border border-slate-200 rounded-lg bg-slate-50/50 relative group">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">שירות</label>
+<select class="w-full border-slate-200 rounded-lg bg-white text-sm">
+<option>בדיקות דם לעובדים</option>
+</select>
+</div>
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">קטגוריה</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" type="text" value="בדיקות"/>
+</div>
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">תיאור</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" type="text" value="בדיקות דם מקיפות באתר הלקוח"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+<div>
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">כמות</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" type="number" value="50"/>
+</div>
+<div>
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">מחיר ליחידה</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">₪</span>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm pl-7" type="text" value="99"/>
+</div>
+</div>
+<div class="md:col-span-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">הערות</label>
+<input class="w-full border-slate-200 rounded-lg bg-white text-sm" placeholder="הערות לפריט..." type="text"/>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-xs text-slate-400">סה"כ פריט:</span>
+<div class="flex items-center gap-2">
+<span class="font-bold text-teal-600">₪4,950</span>
+<span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold">12% רווח</span>
+</div>
+</div>
+<button class="text-slate-300 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Summary Bar -->
+<div class="bg-teal-600 p-6 flex justify-between items-center text-white">
+<div class="text-sm font-medium opacity-90">סך הכל לפני מע"מ</div>
+<div class="text-2xl font-black tracking-tight">סה"כ: ₪28,400</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Side Info) -->
+<div class="lg:col-span-1 space-y-8">
+<!-- Card 3: Additional Info -->
+<div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+<div class="flex items-center gap-2 mb-6 text-orange-500">
+<span class="material-symbols-outlined">notes</span>
+<h2 class="text-lg font-bold">מידע נוסף</h2>
+</div>
+<div class="space-y-6">
+<div class="space-y-1.5">
+<label class="text-xs font-bold text-slate-500 block">הערות</label>
+<textarea class="w-full border-slate-200 rounded-lg focus:ring-teal-600 focus:border-teal-600 text-sm p-3 resize-none" placeholder="הוסף הערות פנימיות..." rows="4"></textarea>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-bold text-slate-500 block">תנאים והגבלות</label>
+<textarea class="w-full border-slate-200 rounded-lg focus:ring-teal-600 focus:border-teal-600 text-[11px] p-3 resize-none leading-relaxed text-slate-600" rows="8">ההצעה בתוקף ל-30 ימים.
+המחירים אינם כוללים מע"מ.
+ביטול אירוע פחות מ-48 שעות לפני המועד יחויב ב-50% מעלות ההצעה.
+אספקת הציוד והכיבוד באחריות הספקים המורשים של InHealthy בלבד.</textarea>
+</div>
+</div>
+</div>
+<!-- Marketing/Help Widget (Bento Style) -->
+<div class="bg-teal-50 rounded-xl border border-teal-100 p-6 overflow-hidden relative">
+<div class="relative z-10">
+<h3 class="text-teal-900 font-bold mb-2">זקוקים לעזרה?</h3>
+<p class="text-teal-700 text-xs leading-relaxed mb-4">מרכז המידע שלנו כולל את כל המחירונים המעודכנים ואת קטלוג השירותים החדש ל-2024.</p>
+<a class="inline-flex items-center gap-2 text-teal-600 font-bold text-xs hover:underline underline-offset-4" href="#">
+                                צפייה בקטלוג
+                                <span class="material-symbols-outlined text-sm">arrow_left_alt</span>
+</a>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -left-4 text-8xl text-teal-200/50 rotate-12">health_and_safety</span>
+</div>
+<!-- Revenue Insight Card -->
+<div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 text-xs font-bold uppercase">רווחיות צפויה</span>
+<span class="text-green-600 text-sm font-bold">₪5,820</span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-2">
+<div class="bg-teal-600 h-full rounded-full" style="width: 20.5%"></div>
+</div>
+<p class="text-[10px] text-slate-400 text-center">ההצעה הנוכחית עומדת על 20.5% רווח גולמי</p>
+</div>
+</div>
+</div>
+<!-- Bottom Floating Action for Mobile -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 md:hidden">
+<button class="bg-teal-600 text-white px-8 py-3 rounded-full shadow-2xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined">save</span>
+                    שמירת הצעה
+                </button>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>בחברה בריאה - ניהול לקוחות</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#2A9D8F',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        },
+                        orange: {
+                            400: '#fb923c',
+                            500: '#E76F51',
+                            600: '#ea580c',
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Rubik"],
+                        "body": ["Rubik"],
+                        "label": ["Rubik"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Rubik', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-[#F4F4F5] text-slate-900 antialiased font-sans">
+<!-- SideNavBar Shell -->
+<aside class="fixed right-0 top-0 h-screen flex flex-col z-50 overflow-y-auto overflow-x-hidden rtl bg-teal-600 dark:bg-teal-900 w-[220px] shadow-xl border-l border-teal-700/50 dark:border-slate-800">
+<div class="p-6 flex flex-col items-center gap-2 mb-4">
+<div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-teal-600 text-3xl" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div class="text-center">
+<h1 class="text-white text-xl font-bold tracking-tight">בחברה בריאה</h1>
+<p class="text-teal-100 text-[10px] opacity-80 leading-tight">ניהול בריאות ארגונית</p>
+</div>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm">לוח בקרה</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-white bg-teal-700 dark:bg-teal-800 border-r-4 border-orange-400" href="#">
+<span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="text-sm font-medium">לקוחות</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="text-sm">הצעות מחיר</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="text-sm">הזמנות</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="text-sm">מוצרים</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-sm">הוצאות</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-teal-50 dark:text-teal-200 hover:bg-teal-500/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm">הגדרות</span>
+</a>
+</nav>
+<div class="p-4 mt-auto border-t border-teal-500/30">
+<div class="flex items-center gap-3 px-2">
+<div class="w-8 h-8 rounded-full bg-teal-400/50 flex items-center justify-center text-white overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up portrait of a professional corporate woman in a bright office environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEsPqaiB8_XJf17q0rCoj1RhW_aMAMd9Nl1ZncFAmqhUMN1BwhLbL3vK5dHaH2frRytRKlzKD8MJuUC6VmTEKzjG4hGuRubn4tfZqTRc94MXaKARTTemEIY4RJ04OZIbJfcqCt5t5OhXC1NqTBesgl-Xd13ZM0xslT-gFNp6mjZXS1_edETw5pmtelBR4D_bNoigmXbDv52w0w7_8JPLSIGG8Kc_td-zNjraDnk3V9DCQ1vCf5nafsfTxRr_jh36AsWaw4wkKVpxc6"/>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-white leading-none">אורן גולד</span>
+<span class="text-[10px] text-teal-200">מנהל מערכת</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 left-0 right-[220px] h-16 flex items-center justify-between px-8 z-40 rtl bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="absolute inset-y-0 right-3 flex items-center text-slate-400">
+<span class="material-symbols-outlined text-xl">search</span>
+</span>
+<input class="w-64 pr-10 pl-4 py-1.5 bg-slate-100 border-none rounded-full text-sm focus:ring-2 focus:ring-teal-600/20 transition-all outline-none" placeholder="חיפוש גלובלי..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:text-teal-600 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-6 w-[1px] bg-slate-200 mx-2"></div>
+<span class="text-sm font-medium text-slate-700">אורן</span>
+<button class="flex items-center gap-1 p-2 text-slate-500 hover:text-red-500 transition-colors group">
+<span class="material-symbols-outlined text-lg">logout</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="mr-[220px] mt-16 p-8 min-h-[calc(100vh-64px)]">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+<div>
+<h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">לקוחות</h2>
+<p class="text-slate-500 text-sm mt-1">ניהול ותחזוקת תיקי לקוחות בחברה בריאה</p>
+</div>
+<button class="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-lg font-semibold transition-all shadow-md active:scale-95">
+<span class="material-symbols-outlined text-lg">add</span>
+                לקוח חדש
+            </button>
+</div>
+<!-- Filter & Search Bento Section -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+<div class="lg:col-span-2 bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400">search</span>
+<input class="w-full bg-transparent border-none text-sm focus:ring-0 placeholder:text-slate-400" placeholder="חיפוש לקוח לפי שם, חברה או איש קשר..." type="text"/>
+</div>
+<div class="bg-white p-2 rounded-xl shadow-sm border border-slate-200 flex items-center justify-around">
+<button class="px-4 py-1.5 text-xs font-bold rounded-lg bg-teal-50 text-teal-700">הכל</button>
+<button class="px-4 py-1.5 text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-colors">פעיל</button>
+<button class="px-4 py-1.5 text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-colors">ליד</button>
+<button class="px-4 py-1.5 text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-colors">רדום</button>
+</div>
+<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+<span class="text-xs font-medium text-slate-400">מיון לפי:</span>
+<select class="text-sm font-medium text-slate-700 bg-transparent border-none focus:ring-0 pr-8 cursor-pointer">
+<option>פעילות אחרונה</option>
+<option>א"ב</option>
+<option>סטטוס</option>
+</select>
+</div>
+</div>
+<!-- Clients Table Container -->
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-right border-collapse">
+<thead>
+<tr class="bg-slate-50/50 border-b border-slate-200">
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">שם הלקוח</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">חברה</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">פעילות אחרונה</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">הצעות פתוחות</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">אחראי</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">סטטוס</th>
+<th class="px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Row 1 -->
+<tr class="hover:bg-teal-50/30 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-sm">אי</div>
+<span class="font-bold text-slate-800">איקאה</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600">איקאה ישראל</td>
+<td class="px-6 py-4 text-sm text-slate-600">לפני 2 ימים</td>
+<td class="px-6 py-4">
+<span class="bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full text-xs font-medium">1</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-200 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a professional man in glasses with a confident smile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdGzxqD10F-mTgyERhsJZuRyxCULTP1hfenYfDH0TDCS-Px83ZDaqgUdh8q-XPbvyIr8HNtvP1j8tMoxs-HEq60xBcMtA2-PvrDCXKIbzIw0wfWKpLThwvWb_A58q9XUMpbp3PKHiykOjdLPcpK3y4wGzkg9Wj1kmdDiFEr90Z-KSNqAFes2zIOTwu-ekWhr1924tHWK2cF1R3BzUxRJzgSF2eiyikdoWthRA2fy8cS54kGCMPzwUA5oMT_jf9lOz95IbZ56r4L5PW"/>
+</div>
+<span class="text-sm text-slate-700 font-medium">אורן</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[11px] font-bold">פעיל</span>
+</td>
+<td class="px-6 py-4 text-left">
+<button class="text-slate-300 hover:text-teal-600 opacity-0 group-hover:opacity-100 transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-teal-50/30 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm">סי</div>
+<span class="font-bold text-slate-800">סימנס</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600">Siemens</td>
+<td class="px-6 py-4 text-sm text-slate-600">לפני 5 ימים</td>
+<td class="px-6 py-4">
+<span class="bg-slate-100 text-slate-400 px-2.5 py-0.5 rounded-full text-xs font-medium">0</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-200 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional business profile picture of a man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVuDhzwUm9QqnBz1vqgaLAPIsfIcYh5b-yjDjz1d-4vSI-_hs0WkxWrkf88nwInlT_8kvAUBPcsy4TJWNqLar0zUWSiTUDqBC0lHcLwboFho9twGsLh4yR6hjMJJmHUivFJpSwytv9B11dvU41GwbIElC7-DJE5pX3j53L6qhFMwNG1sk0z__X47mBw7h51lG-qtpUvJ8bJEK9g1ZAMf008dCbxkJusJ_5UlBuGXwzp6NUDm8PFHynBvb96EEeYKPBjNcivw1-AVEU"/>
+</div>
+<span class="text-sm text-slate-700 font-medium">אורן</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[11px] font-bold">פעיל</span>
+</td>
+<td class="px-6 py-4 text-left">
+<button class="text-slate-300 hover:text-teal-600 opacity-0 group-hover:opacity-100 transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-teal-50/30 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-sm">קל</div>
+<span class="font-bold text-slate-800">קלאודינרי</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600">Cloudinary</td>
+<td class="px-6 py-4 text-sm text-slate-600">לפני 12 ימים</td>
+<td class="px-6 py-4">
+<span class="bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full text-xs font-medium">2</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center text-[10px] font-bold">אל</div>
+<span class="text-sm text-slate-700 font-medium">אלון</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[11px] font-bold">פעיל</span>
+</td>
+<td class="px-6 py-4 text-left">
+<button class="text-slate-300 hover:text-teal-600 opacity-0 group-hover:opacity-100 transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 - Dormant -->
+<tr class="hover:bg-red-50/30 transition-colors group bg-red-50/10">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-orange-700 font-bold text-sm">אמ</div>
+<span class="font-bold text-slate-800">אמזון</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600">Amazon IL</td>
+<td class="px-6 py-4 text-sm text-red-500 font-medium">לפני 45 ימים</td>
+<td class="px-6 py-4">
+<span class="bg-slate-100 text-slate-400 px-2.5 py-0.5 rounded-full text-xs font-medium">0</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-200 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up profile of a man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiLrgzfxLloeUytqHhKwEN0ahrrDwmCVMf7zBDCsTNIZXedRToBG0rCrCdAjwNErzuIuHPibLvryxP8HEdq6ReRPdNhaLrkA94faPGm3g79ayL5R3FlBJDUQTsXuqIiEhuN1fQNfvgLtxLOxc3tSfjmkQJQjJNox8CjmZTd9Vu0LGmQlkmzXYV7Bn9qOrEs6LYetVSB9nA8rYO_yq9ae_LagkPzeisunuIeGH_jnS4TEMZYl_A988VK__5pwzfs9rNjG2A_ZyW4BnN"/>
+</div>
+<span class="text-sm text-slate-700 font-medium">אורן</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-[11px] font-bold">רדום</span>
+</td>
+<td class="px-6 py-4 text-left">
+<button class="text-slate-300 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-teal-50/30 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-sm">דק</div>
+<span class="font-bold text-slate-800">דקסל</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600">Dexcel Pharma</td>
+<td class="px-6 py-4 text-sm text-slate-600">לפני 8 ימים</td>
+<td class="px-6 py-4">
+<span class="bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full text-xs font-medium">1</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center text-[10px] font-bold">אל</div>
+<span class="text-sm text-slate-700 font-medium">אלון</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[11px] font-bold">פעיל</span>
+</td>
+<td class="px-6 py-4 text-left">
+<button class="text-slate-300 hover:text-teal-600 opacity-0 group-hover:opacity-100 transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 6 - Dormant -->
+<tr class="hover:bg-red-50/30 transition-colors group bg-red-50/10">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">צ'מ</div>
+<span class="font-bold text-slate-800">צ'ק מרקס</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600">Checkmarx</td>
+<td class="px-6 py-4 text-sm text-red-500 font-medium">לפני 60 ימים</td>
+<td class="px-6 py-4">
+<span class="bg-slate-100 text-slate-400 px-2.5 py-0.5 rounded-full text-xs font-medium">0</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center text-[10px] font-bold">אל</div>
+<span class="text-sm text-slate-700 font-medium">אלון</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-[11px] font-bold">רדום</span>
+</td>
+<td class="px-6 py-4 text-left">
+<button class="text-slate-300 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 7 -->
+<tr class="hover:bg-teal-50/30 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm">HP</div>
+<span class="font-bold text-slate-800">HP</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600">HP Indigo</td>
+<td class="px-6 py-4 text-sm text-slate-600">לפני 3 ימים</td>
+<td class="px-6 py-4">
+<span class="bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full text-xs font-medium">3</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-200 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait photo of a team member" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNBNro1nnnlRYQLVsjvAh1b8Eg-ya6K8pUeBf_XalHZT4X38OlRnwRb7HcjSQdesDL5oEu78Py5he-w5RPbge2lYdZuBFIz5CUvQd8Fz21Sn1eDxZCskPO6WQu5_Q5d8mnIyJPCWjZkUi37JhR6CMNKjKKJjxqZ6j-5m6rMMnEc_1aof4vqJ_8uu7oetwyJ8NJoxsermIydWlS13QH-emk-hIyMyyVaXiIrMGqYM_reo5K81PcDypLAagp9i5OkXKFvjYbTyNoeYgm"/>
+</div>
+<span class="text-sm text-slate-700 font-medium">אורן</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[11px] font-bold">פעיל</span>
+</td>
+<td class="px-6 py-4 text-left">
+<button class="text-slate-300 hover:text-teal-600 opacity-0 group-hover:opacity-100 transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 bg-slate-50/30 border-t border-slate-100 flex items-center justify-between">
+<div class="text-sm text-slate-500">
+                    מציג <span class="font-bold text-slate-700">7</span> מתוך <span class="font-bold text-slate-700">42</span> לקוחות
+                </div>
+<div class="flex items-center gap-1">
+<button class="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-slate-400 disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-teal-600 text-white font-bold text-xs shadow-sm">1</button>
+<button class="w-8 h-8 rounded-lg hover:bg-white hover:shadow-sm transition-all text-slate-600 font-medium text-xs border border-transparent hover:border-slate-200">2</button>
+<button class="w-8 h-8 rounded-lg hover:bg-white hover:shadow-sm transition-all text-slate-600 font-medium text-xs border border-transparent hover:border-slate-200">3</button>
+<span class="px-1 text-slate-400">...</span>
+<button class="w-8 h-8 rounded-lg hover:bg-white hover:shadow-sm transition-all text-slate-600 font-medium text-xs border border-transparent hover:border-slate-200">6</button>
+<button class="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-slate-400">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>
