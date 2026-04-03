@@ -3,6 +3,7 @@ import { getClients } from "@/lib/queries/client-queries";
 import { getQuoteById } from "@/lib/queries/quote-queries";
 import { OrderForm } from "@/components/orders/order-form";
 import { createOrder } from "@/lib/actions/order-actions";
+import { serialize } from "@/lib/utils";
 
 interface NewOrderPageProps {
   searchParams: Promise<{ quoteId?: string; clientId?: string }>;
@@ -12,8 +13,8 @@ export default async function NewOrderPage({ searchParams }: NewOrderPageProps) 
   const { quoteId, clientId } = await searchParams;
 
   const [clients, services] = await Promise.all([
-    getClients(),
-    getActiveServices(),
+    getClients().then(serialize),
+    getActiveServices().then(serialize),
   ]);
 
   const clientsForForm = clients.map((c) => ({

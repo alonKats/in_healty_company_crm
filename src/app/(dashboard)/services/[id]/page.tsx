@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getServiceById, getCategories } from "@/lib/queries/service-queries";
 import { ServiceForm } from "@/components/services/service-form";
 import { updateService, deleteService } from "@/lib/actions/service-actions";
+import { serialize } from "@/lib/utils";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -10,8 +11,8 @@ interface Props {
 export default async function EditServicePage({ params }: Props) {
   const { id } = await params;
   const [service, categories] = await Promise.all([
-    getServiceById(id),
-    getCategories(),
+    getServiceById(id).then(serialize),
+    getCategories().then(serialize),
   ]);
 
   if (!service) notFound();

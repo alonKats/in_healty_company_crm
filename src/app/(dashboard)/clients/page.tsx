@@ -1,6 +1,7 @@
 import { getClients } from "@/lib/queries/client-queries";
 import { prisma } from "@/lib/prisma";
 import { ClientList } from "@/components/clients/client-list";
+import { serialize } from "@/lib/utils";
 
 export default async function ClientsPage() {
   const [clients, users] = await Promise.all([
@@ -8,5 +9,5 @@ export default async function ClientsPage() {
     prisma.user.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
   ]);
 
-  return <ClientList clients={clients} users={users} />;
+  return <ClientList clients={serialize(clients)} users={serialize(users)} />;
 }
