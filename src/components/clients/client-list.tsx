@@ -23,6 +23,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { PlusIcon, SearchIcon } from "lucide-react";
 import { AddClientDialog } from "./add-client-dialog";
+import { SortableHeader } from "@/components/ui/sortable-header";
 import type { Client, User, Quote, Activity } from "@/generated/prisma";
 
 interface ClientWithRelations extends Client {
@@ -57,6 +58,17 @@ export function ClientList({ clients, users }: ClientListProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [sortField, setSortField] = useState("name");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+  function handleSort(field: string) {
+    if (field === sortField) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  }
 
   const filtered = clients.filter((client) => {
     const matchesStatus = statusFilter === "ALL" || client.status === statusFilter;
@@ -65,6 +77,22 @@ export function ClientList({ clients, users }: ClientListProps) {
       client.name.toLowerCase().includes(search.toLowerCase()) ||
       (client.company ?? "").toLowerCase().includes(search.toLowerCase());
     return matchesStatus && matchesSearch;
+  });
+
+  const sorted = Array.from(filtered).sort((a, b) => {
+    let cmp = 0;
+    if (sortField === "name") {
+      cmp = a.name.localeCompare(b.name);
+    } else if (sortField === "company") {
+      cmp = (a.company ?? "").localeCompare(b.company ?? "");
+    } else if (sortField === "lastActivity") {
+      const aDate = a.activities[0]?.date ? new Date(a.activities[0].date).getTime() : 0;
+      const bDate = b.activities[0]?.date ? new Date(b.activities[0].date).getTime() : 0;
+      cmp = aDate - bDate;
+    } else if (sortField === "status") {
+      cmp = a.status.localeCompare(b.status);
+    }
+    return sortDir === "asc" ? cmp : -cmp;
   });
 
   return (
@@ -116,16 +144,24 @@ export function ClientList({ clients, users }: ClientListProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-right">שם</TableHead>
-                  <TableHead className="text-right">חברה</TableHead>
-                  <TableHead className="text-right">פעילות אחרונה</TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="שם" field="name" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="חברה" field="company" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="פעילות אחרונה" field="lastActivity" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
                   <TableHead className="text-right">הצעות פתוחות</TableHead>
                   <TableHead className="text-right">אחראי</TableHead>
-                  <TableHead className="text-right">סטטוס</TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="סטטוס" field="status" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((client) => {
+                {sorted.map((client) => {
                   const lastActivity = client.activities[0]?.date;
                   const days = lastActivity ? daysSince(lastActivity) : null;
                   const isStale = days !== null && days > 30;

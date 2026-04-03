@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlusIcon } from "lucide-react";
+import { SortableHeader } from "@/components/ui/sortable-header";
 import type { Quote, Client, User } from "@/generated/prisma";
 
 interface QuoteWithRelations extends Quote {
@@ -47,6 +49,32 @@ function formatDate(date: Date | null | undefined): string {
 }
 
 export function QuoteList({ quotes }: QuoteListProps) {
+  const [sortField, setSortField] = useState("createdAt");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+
+  function handleSort(field: string) {
+    if (field === sortField) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  }
+
+  const sorted = Array.from(quotes).sort((a, b) => {
+    let cmp = 0;
+    if (sortField === "quoteNumber") {
+      cmp = a.quoteNumber - b.quoteNumber;
+    } else if (sortField === "totalAmount") {
+      cmp = Number(a.totalAmount) - Number(b.totalAmount);
+    } else if (sortField === "createdAt") {
+      cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    } else if (sortField === "status") {
+      cmp = a.status.localeCompare(b.status);
+    }
+    return sortDir === "asc" ? cmp : -cmp;
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
@@ -70,17 +98,25 @@ export function QuoteList({ quotes }: QuoteListProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-right">מספר</TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="מספר" field="quoteNumber" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
                   <TableHead className="text-right">לקוח</TableHead>
-                  <TableHead className="text-right">סכום</TableHead>
-                  <TableHead className="text-right">תאריך</TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="סכום" field="totalAmount" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="תאריך" field="createdAt" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
                   <TableHead className="text-right">תוקף עד</TableHead>
                   <TableHead className="text-right">אחראי</TableHead>
-                  <TableHead className="text-right">סטטוס</TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="סטטוס" field="status" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {quotes.map((quote) => (
+                {sorted.map((quote) => (
                   <TableRow key={quote.id}>
                     <TableCell>
                       <Link

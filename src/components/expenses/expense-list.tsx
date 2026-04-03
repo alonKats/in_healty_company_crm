@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlusIcon, PencilIcon, TrashIcon } from "lucide-react";
+import { SortableHeader } from "@/components/ui/sortable-header";
 import { AddExpenseDialog } from "./add-expense-dialog";
 import { EditExpenseDialog } from "./edit-expense-dialog";
 import { deleteExpense } from "@/lib/actions/expense-actions";
@@ -71,6 +72,29 @@ export function ExpenseList({ expenses, monthlySummary }: ExpenseListProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [editExpense, setEditExpense] = useState<SerializedExpense | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [sortField, setSortField] = useState("date");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+
+  function handleSort(field: string) {
+    if (field === sortField) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  }
+
+  const sorted = Array.from(expenses).sort((a, b) => {
+    let cmp = 0;
+    if (sortField === "date") {
+      cmp = new Date(a.date).getTime() - new Date(b.date).getTime();
+    } else if (sortField === "amount") {
+      cmp = a.amount - b.amount;
+    } else if (sortField === "category") {
+      cmp = a.category.localeCompare(b.category);
+    }
+    return sortDir === "asc" ? cmp : -cmp;
+  });
 
   function handleDelete(id: string) {
     if (!confirm("למחוק את ההוצאה?")) return;
@@ -133,16 +157,22 @@ export function ExpenseList({ expenses, monthlySummary }: ExpenseListProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-right">תאריך</TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="תאריך" field="date" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
                   <TableHead className="text-right">תיאור</TableHead>
-                  <TableHead className="text-right">קטגוריה</TableHead>
-                  <TableHead className="text-right">סכום</TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="קטגוריה" field="category" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="סכום" field="amount" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
                   <TableHead className="text-right">אמצעי תשלום</TableHead>
                   <TableHead className="text-right w-20">פעולות</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {expenses.map((expense) => (
+                {sorted.map((expense) => (
                   <TableRow key={expense.id}>
                     <TableCell className="text-sm">{formatDate(expense.date)}</TableCell>
                     <TableCell className="text-sm font-medium max-w-[200px] truncate">

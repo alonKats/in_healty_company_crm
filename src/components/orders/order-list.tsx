@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlusIcon } from "lucide-react";
+import { SortableHeader } from "@/components/ui/sortable-header";
 import type { Order, Client, Payment } from "@/generated/prisma";
 
 interface OrderWithRelations extends Order {
@@ -64,6 +66,36 @@ function getPaymentColor(payments: Pick<Payment, "id" | "status">[]): string {
 }
 
 export function OrderList({ orders }: OrderListProps) {
+  const [sortField, setSortField] = useState("createdAt");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+
+  function handleSort(field: string) {
+    if (field === sortField) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  }
+
+  const sorted = Array.from(orders).sort((a, b) => {
+    let cmp = 0;
+    if (sortField === "orderNumber") {
+      cmp = a.orderNumber - b.orderNumber;
+    } else if (sortField === "totalAmount") {
+      cmp = Number(a.totalAmount) - Number(b.totalAmount);
+    } else if (sortField === "eventDate") {
+      const aDate = a.eventDate ? new Date(a.eventDate).getTime() : 0;
+      const bDate = b.eventDate ? new Date(b.eventDate).getTime() : 0;
+      cmp = aDate - bDate;
+    } else if (sortField === "status") {
+      cmp = a.status.localeCompare(b.status);
+    } else if (sortField === "createdAt") {
+      cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    }
+    return sortDir === "asc" ? cmp : -cmp;
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
@@ -87,17 +119,25 @@ export function OrderList({ orders }: OrderListProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-right">מספר</TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="מספר" field="orderNumber" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
                   <TableHead className="text-right">לקוח</TableHead>
                   <TableHead className="text-right">סוג</TableHead>
-                  <TableHead className="text-right">תאריך אירוע</TableHead>
-                  <TableHead className="text-right">סטטוס</TableHead>
-                  <TableHead className="text-right">סכום</TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="תאריך אירוע" field="eventDate" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="סטטוס" field="status" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <SortableHeader label="סכום" field="totalAmount" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </TableHead>
                   <TableHead className="text-right">תשלום</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {orders.map((order) => (
+                {sorted.map((order) => (
                   <TableRow key={order.id}>
                     <TableCell>
                       <Link
