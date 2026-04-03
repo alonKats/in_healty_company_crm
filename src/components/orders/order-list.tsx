@@ -3,16 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { PlusIcon } from "lucide-react";
 import { SortableHeader } from "@/components/ui/sortable-header";
 import type { Order, Client, Payment } from "@/generated/prisma";
@@ -35,10 +25,10 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusColors: Record<string, string> = {
-  CONFIRMED: "bg-green-100 text-green-700 border-green-200",
-  IN_PROGRESS: "bg-blue-100 text-blue-700 border-blue-200",
-  COMPLETED: "bg-gray-100 text-gray-700 border-gray-200",
-  CANCELLED: "bg-red-100 text-red-700 border-red-200",
+  CONFIRMED: "bg-emerald-100 text-emerald-700",
+  IN_PROGRESS: "bg-blue-100 text-blue-700",
+  COMPLETED: "bg-slate-100 text-slate-600",
+  CANCELLED: "bg-red-100 text-red-700",
 };
 
 const typeLabels: Record<string, string> = {
@@ -59,10 +49,10 @@ function getPaymentStatus(payments: Pick<Payment, "id" | "status">[]): string {
 }
 
 function getPaymentColor(payments: Pick<Payment, "id" | "status">[]): string {
-  if (payments.length === 0) return "bg-gray-100 text-gray-700 border-gray-200";
+  if (payments.length === 0) return "bg-slate-100 text-slate-500";
   const allPaid = payments.every((p) => p.status === "PAID");
-  if (allPaid) return "bg-green-100 text-green-700 border-green-200";
-  return "bg-amber-100 text-amber-700 border-amber-200";
+  if (allPaid) return "bg-emerald-100 text-emerald-700";
+  return "bg-amber-100 text-amber-700";
 }
 
 export function OrderList({ orders }: OrderListProps) {
@@ -97,95 +87,96 @@ export function OrderList({ orders }: OrderListProps) {
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold">הזמנות</h2>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">הזמנות</h2>
+          <p className="text-slate-500 text-sm mt-1">ניהול ומעקב אחר הזמנות פעילות</p>
+        </div>
         <Link
           href="/orders/new"
-          className={cn(buttonVariants({ variant: "default" }))}
+          className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-teal-600/20 active:scale-95"
         >
-          <PlusIcon className="h-4 w-4 ml-1" />
+          <PlusIcon className="h-4 w-4" />
           הזמנה חדשה
         </Link>
       </div>
 
       {orders.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-muted-foreground mb-4">אין הזמנות</p>
+        <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-xl border border-slate-200 shadow-sm">
+          <p className="text-slate-400 text-sm">אין הזמנות</p>
         </div>
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-right border-collapse">
+              <thead>
+                <tr className="bg-slate-50/50 border-b border-slate-200">
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="מספר" field="orderNumber" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">לקוח</TableHead>
-                  <TableHead className="text-right">סוג</TableHead>
-                  <TableHead className="text-right">
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">לקוח</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">סוג</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="תאריך אירוע" field="eventDate" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="סטטוס" field="status" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="סכום" field="totalAmount" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">תשלום</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">תשלום</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
                 {sorted.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell>
-                      <Link
-                        href={`/orders/${order.id}`}
-                        className="font-medium text-primary hover:underline"
-                      >
+                  <tr key={order.id} className="hover:bg-teal-50/30 transition-colors group">
+                    <td className="px-6 py-4">
+                      <Link href={`/orders/${order.id}`} className="font-bold text-teal-600 hover:underline">
                         #{order.orderNumber}
                       </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/clients/${order.client.id}`}
-                        className="hover:underline text-sm"
-                      >
+                    </td>
+                    <td className="px-6 py-4">
+                      <Link href={`/clients/${order.client.id}`} className="font-medium text-slate-800 hover:text-teal-600 transition-colors text-sm">
                         {order.client.name}
                       </Link>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600">
                       {typeLabels[order.type] ?? order.type}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {formatDate(order.eventDate)}
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{formatDate(order.eventDate)}</td>
+                    <td className="px-6 py-4">
                       <span className={cn(
-                        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
-                        statusColors[order.status] ?? "bg-gray-100 text-gray-700 border-gray-200"
+                        "px-3 py-1 rounded-full text-[11px] font-bold",
+                        statusColors[order.status] ?? "bg-slate-100 text-slate-600"
                       )}>
                         {statusLabels[order.status] ?? order.status}
                       </span>
-                    </TableCell>
-                    <TableCell className="text-sm font-medium">
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold text-slate-800">
                       ₪{Number(order.totalAmount).toLocaleString()}
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="px-6 py-4">
                       <span className={cn(
-                        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+                        "px-3 py-1 rounded-full text-[11px] font-bold",
                         getPaymentColor(order.payments)
                       )}>
                         {getPaymentStatus(order.payments)}
                       </span>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              </tbody>
+            </table>
+          </div>
+          <div className="px-6 py-4 bg-slate-50/30 border-t border-slate-100">
+            <div className="text-sm text-slate-500">
+              סה&quot;כ <span className="font-bold text-slate-700">{orders.length}</span> הזמנות
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

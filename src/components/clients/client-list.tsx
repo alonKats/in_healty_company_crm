@@ -3,8 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -12,15 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
 import { PlusIcon, SearchIcon } from "lucide-react";
 import { AddClientDialog } from "./add-client-dialog";
 import { SortableHeader } from "@/components/ui/sortable-header";
@@ -44,10 +33,29 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusColors: Record<string, string> = {
-  LEAD: "bg-amber-100 text-amber-700 border-amber-200",
-  ACTIVE: "bg-green-100 text-green-700 border-green-200",
-  DORMANT: "bg-red-100 text-red-700 border-red-200",
+  LEAD: "bg-amber-100 text-amber-700",
+  ACTIVE: "bg-emerald-100 text-emerald-700",
+  DORMANT: "bg-red-100 text-red-700",
 };
+
+const avatarColors = [
+  "bg-teal-100 text-teal-700",
+  "bg-blue-100 text-blue-700",
+  "bg-purple-100 text-purple-700",
+  "bg-orange-100 text-orange-700",
+  "bg-green-100 text-green-700",
+  "bg-indigo-100 text-indigo-700",
+  "bg-slate-100 text-slate-700",
+];
+
+function getAvatarColor(name: string) {
+  const idx = name.charCodeAt(0) % avatarColors.length;
+  return avatarColors[idx] ?? "bg-teal-100 text-teal-700";
+}
+
+function getInitials(name: string) {
+  return name.slice(0, 2);
+}
 
 function daysSince(date: Date | string): number {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -96,130 +104,161 @@ export function ClientList({ clients, users }: ClientListProps) {
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold">לקוחות</h2>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">לקוחות</h2>
+          <p className="text-slate-500 text-sm mt-1">ניהול ותחזוקת תיקי לקוחות</p>
+        </div>
         <button
           onClick={() => setDialogOpen(true)}
-          className={cn(buttonVariants({ variant: "default" }))}
+          className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-teal-600/20 active:scale-95"
         >
-          <PlusIcon className="h-4 w-4 ml-1" />
+          <PlusIcon className="h-4 w-4" />
           לקוח חדש
         </button>
       </div>
 
-      <div className="flex gap-3 items-center">
-        <div className="relative flex-1 max-w-sm">
-          <SearchIcon className="absolute right-2.5 top-2 h-4 w-4 text-muted-foreground pointer-events-none" />
-          <Input
-            placeholder="חיפוש לקוח..."
+      {/* Filter Bar */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div className="lg:col-span-2 bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center gap-3">
+          <SearchIcon className="h-4 w-4 text-slate-400 flex-shrink-0" />
+          <input
+            type="text"
+            placeholder="חיפוש לקוח לפי שם, חברה..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pr-8"
+            className="w-full bg-transparent border-none text-sm focus:ring-0 outline-none placeholder:text-slate-400"
           />
         </div>
-        <Select
-          value={statusFilter}
-          onValueChange={(v) => v && setStatusFilter(v)}
-        >
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder="סטטוס" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">הכל</SelectItem>
-            <SelectItem value="LEAD">ליד</SelectItem>
-            <SelectItem value="ACTIVE">פעיל</SelectItem>
-            <SelectItem value="DORMANT">רדום</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-200 flex items-center justify-around">
+          {["ALL", "ACTIVE", "LEAD", "DORMANT"].map((s) => (
+            <button
+              key={s}
+              onClick={() => setStatusFilter(s)}
+              className={cn(
+                "px-4 py-1.5 text-xs font-medium rounded-lg transition-colors",
+                statusFilter === s
+                  ? "bg-teal-50 text-teal-700 font-bold"
+                  : "text-slate-500 hover:bg-slate-50"
+              )}
+            >
+              {s === "ALL" ? "הכל" : statusLabels[s]}
+            </button>
+          ))}
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+          <span className="text-xs font-medium text-slate-400">מיון לפי:</span>
+          <Select value={sortField} onValueChange={(v) => v && setSortField(v)}>
+            <SelectTrigger className="w-auto border-none shadow-none text-sm font-medium text-slate-700 focus:ring-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name">שם</SelectItem>
+              <SelectItem value="company">חברה</SelectItem>
+              <SelectItem value="lastActivity">פעילות</SelectItem>
+              <SelectItem value="status">סטטוס</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
+      {/* Table */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-muted-foreground mb-4">לא נמצאו לקוחות</p>
+        <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-xl border border-slate-200 shadow-sm">
+          <p className="text-slate-400 text-sm">לא נמצאו לקוחות</p>
         </div>
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">
-                    <SortableHeader label="שם" field="name" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-right border-collapse">
+              <thead>
+                <tr className="bg-slate-50/50 border-b border-slate-200">
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <SortableHeader label="שם לקוח" field="name" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="חברה" field="company" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="פעילות אחרונה" field="lastActivity" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">הצעות פתוחות</TableHead>
-                  <TableHead className="text-right">אחראי</TableHead>
-                  <TableHead className="text-right">
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">הצעות פתוחות</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">אחראי</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="סטטוס" field="status" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
                 {sorted.map((client) => {
                   const lastActivity = client.activities[0]?.date;
                   const days = lastActivity ? daysSince(lastActivity) : null;
                   const isStale = days !== null && days > 30;
 
                   return (
-                    <TableRow key={client.id}>
-                      <TableCell>
-                        <Link
-                          href={`/clients/${client.id}`}
-                          className="font-medium text-primary hover:underline"
-                        >
-                          {client.name}
-                        </Link>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-sm">
-                        {client.company ?? "—"}
-                      </TableCell>
-                      <TableCell>
+                    <tr
+                      key={client.id}
+                      className={cn(
+                        "transition-colors group",
+                        client.status === "DORMANT"
+                          ? "hover:bg-red-50/30 bg-red-50/10"
+                          : "hover:bg-teal-50/30"
+                      )}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className={cn("w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm", getAvatarColor(client.name))}>
+                            {getInitials(client.name)}
+                          </div>
+                          <Link href={`/clients/${client.id}`} className="font-bold text-slate-800 hover:text-teal-600 transition-colors">
+                            {client.name}
+                          </Link>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600">{client.company ?? "—"}</td>
+                      <td className="px-6 py-4">
                         {days === null ? (
-                          <span className="text-muted-foreground text-sm">אין</span>
+                          <span className="text-sm text-slate-400">אין</span>
                         ) : (
-                          <span className={cn("text-sm", isStale && "text-red-600 font-medium")}>
+                          <span className={cn("text-sm", isStale ? "text-red-500 font-medium" : "text-slate-600")}>
                             לפני {days} ימים
                           </span>
                         )}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {client.quotes.length > 0 ? (
-                          <span className="font-medium">{client.quotes.length}</span>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {client.assignedTo?.name ?? "—"}
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="px-6 py-4">
                         <span className={cn(
-                          "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
-                          statusColors[client.status] ?? "bg-gray-100 text-gray-700 border-gray-200"
+                          "px-2.5 py-0.5 rounded-full text-xs font-medium",
+                          client.quotes.length > 0 ? "bg-slate-100 text-slate-700" : "bg-slate-100 text-slate-400"
+                        )}>
+                          {client.quotes.length}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600">{client.assignedTo?.name ?? "—"}</td>
+                      <td className="px-6 py-4">
+                        <span className={cn(
+                          "px-3 py-1 rounded-full text-[11px] font-bold",
+                          statusColors[client.status] ?? "bg-gray-100 text-gray-700"
                         )}>
                           {statusLabels[client.status] ?? client.status}
                         </span>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   );
                 })}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              </tbody>
+            </table>
+          </div>
+          <div className="px-6 py-4 bg-slate-50/30 border-t border-slate-100 flex items-center justify-between">
+            <div className="text-sm text-slate-500">
+              מציג <span className="font-bold text-slate-700">{sorted.length}</span> מתוך <span className="font-bold text-slate-700">{clients.length}</span> לקוחות
+            </div>
+          </div>
+        </div>
       )}
 
-      <AddClientDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        users={users}
-      />
+      <AddClientDialog open={dialogOpen} onOpenChange={setDialogOpen} users={users} />
     </div>
   );
 }

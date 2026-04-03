@@ -10,12 +10,9 @@ export default async function ExpensesPage() {
   ]);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">הוצאות</h2>
-      <ExpenseList
-        expenses={serialize(expenses) as unknown as SerializedExpense[]}
-        monthlySummary={monthlySummary}
-      />
-    </div>
+    <ExpenseList
+      expenses={serialize(expenses) as unknown as SerializedExpense[]}
+      monthlySummary={monthlySummary}
+    />
   );
 }

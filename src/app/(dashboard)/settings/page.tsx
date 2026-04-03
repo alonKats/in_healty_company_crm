@@ -18,7 +18,10 @@ export default async function SettingsPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">הגדרות</h2>
+      <div className="mb-8">
+        <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">הגדרות</h2>
+        <p className="text-slate-500 text-sm mt-1">ניהול משתמשים, קטגוריות ותצורת המערכת</p>
+      </div>
       <Tabs defaultValue="users">
         <TabsList>
           <TabsTrigger value="users">משתמשים</TabsTrigger>

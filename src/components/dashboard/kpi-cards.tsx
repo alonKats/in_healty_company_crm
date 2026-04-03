@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TrendingUp, FileText, Clock, ShoppingCart, BarChart2 } from "lucide-react";
 
 interface Kpis {
   monthlyRevenue: number;
@@ -15,32 +15,82 @@ function formatCurrency(amount: number) {
 interface KpiCardProps {
   label: string;
   value: string | number;
+  icon: React.ComponentType<{ className?: string }>;
+  iconBg: string;
+  iconColor: string;
+  badge?: string;
+  badgeColor?: string;
 }
 
-function KpiCard({ label, value }: KpiCardProps) {
+function KpiCard({ label, value, icon: Icon, iconBg, iconColor, badge, badgeColor }: KpiCardProps) {
   return (
-    <Card className="border border-gray-200 bg-white rounded-lg overflow-hidden">
-      <div className="h-1 w-full" style={{ backgroundColor: "#2A9D8F" }} />
-      <CardHeader className="pb-2 pt-3">
-        <CardTitle className="text-sm text-muted-foreground font-normal">
-          {label}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-2xl font-bold" style={{ color: "#2A9D8F" }}>{value}</p>
-      </CardContent>
-    </Card>
+    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
+      <div className="flex justify-between items-start">
+        <span className={`${iconBg} ${iconColor} p-2 rounded-lg`}>
+          <Icon className="w-5 h-5" />
+        </span>
+        {badge && (
+          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>
+            {badge}
+          </span>
+        )}
+      </div>
+      <div className="mt-4">
+        <span className="text-slate-500 text-xs font-medium block">{label}</span>
+        <span className="text-2xl font-bold text-slate-800">{value}</span>
+      </div>
+    </div>
   );
 }
 
 export function KpiCards({ kpis }: { kpis: Kpis }) {
   return (
-    <div className="grid grid-cols-5 gap-4">
-      <KpiCard label="הכנסות החודש" value={formatCurrency(kpis.monthlyRevenue)} />
-      <KpiCard label="הצעות פתוחות" value={formatCurrency(kpis.activeQuotesValue)} />
-      <KpiCard label="תשלומים ממתינים" value={formatCurrency(kpis.pendingPayments)} />
-      <KpiCard label="הזמנות פעילות" value={kpis.activeOrdersCount} />
-      <KpiCard label="אחוז המרה" value={`${kpis.conversionRate}%`} />
+    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <KpiCard
+        label="הכנסות החודש"
+        value={formatCurrency(kpis.monthlyRevenue)}
+        icon={TrendingUp}
+        iconBg="bg-teal-50"
+        iconColor="text-teal-600"
+        badge="+12%"
+        badgeColor="text-green-600 bg-green-50"
+      />
+      <KpiCard
+        label="הצעות פתוחות"
+        value={formatCurrency(kpis.activeQuotesValue)}
+        icon={FileText}
+        iconBg="bg-orange-50"
+        iconColor="text-orange-500"
+        badge="פתוחות"
+        badgeColor="text-slate-400 bg-slate-50"
+      />
+      <KpiCard
+        label="תשלומים ממתינים"
+        value={formatCurrency(kpis.pendingPayments)}
+        icon={Clock}
+        iconBg="bg-amber-50"
+        iconColor="text-amber-500"
+        badge="דחוף"
+        badgeColor="text-amber-600 bg-amber-50"
+      />
+      <KpiCard
+        label="הזמנות פעילות"
+        value={kpis.activeOrdersCount}
+        icon={ShoppingCart}
+        iconBg="bg-blue-50"
+        iconColor="text-blue-500"
+        badge="בביצוע"
+        badgeColor="text-blue-600 bg-blue-50"
+      />
+      <KpiCard
+        label="אחוז המרה"
+        value={`${kpis.conversionRate}%`}
+        icon={BarChart2}
+        iconBg="bg-teal-50"
+        iconColor="text-teal-600"
+        badge="+4.2%"
+        badgeColor="text-green-600 bg-green-50"
+      />
     </div>
   );
 }

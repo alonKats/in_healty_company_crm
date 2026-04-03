@@ -123,13 +123,29 @@ export function QuoteForm({
   }
 
   return (
-    <form action={handleSubmit} className="space-y-6 max-w-3xl mx-auto">
-      {/* Header */}
-      <Card>
-        <CardHeader>
-          <CardTitle>הצעת מחיר חדשה</CardTitle>
+    <form action={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">הצעת מחיר חדשה</h1>
+          <p className="text-slate-500 text-sm mt-1">יצירת הצעת מחיר חדשה עבור לקוחות החברה</p>
+        </div>
+        <div className="flex gap-3">
+          <Button type="button" variant="outline" onClick={() => history.back()} className="border-slate-300 text-slate-600 rounded-lg hover:bg-slate-100 font-medium">
+            ביטול
+          </Button>
+          <Button type="submit" disabled={lineItems.length === 0 || !clientId} className="bg-teal-600 text-white rounded-lg hover:bg-teal-700 shadow-lg shadow-teal-600/20 font-bold px-8">
+            שמירת הצעה
+          </Button>
+        </div>
+      </div>
+
+      {/* Quote Details Card */}
+      <Card className="bg-white rounded-xl border border-slate-200 shadow-sm">
+        <CardHeader className="border-b border-slate-100 pb-4">
+          <CardTitle className="text-teal-600 flex items-center gap-2 text-lg">הצעת מחיר חדשה</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
+        <CardContent className="grid gap-4 sm:grid-cols-2 pt-6">
           {/* Client */}
           <div className="space-y-1.5">
             <Label>לקוח *</Label>
@@ -196,11 +212,11 @@ export function QuoteForm({
       </Card>
 
       {/* Line Items */}
-      <Card>
-        <CardHeader>
+      <Card className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <CardHeader className="border-b border-slate-100 pb-4">
           <div className="flex items-center justify-between">
-            <CardTitle>פריטים</CardTitle>
-            <Button type="button" variant="outline" size="sm" onClick={addItem}>
+            <CardTitle className="text-teal-600 flex items-center gap-2 text-lg">פריטים</CardTitle>
+            <Button type="button" variant="outline" size="sm" onClick={addItem} className="text-teal-600 hover:text-teal-700 font-bold text-sm bg-teal-50 border-teal-200 hover:bg-teal-100 rounded-lg">
               <PlusIcon className="h-4 w-4 ml-1" />
               הוסף פריט
             </Button>
@@ -330,18 +346,17 @@ export function QuoteForm({
           })}
 
           {/* Grand total */}
-          <div className="flex justify-end pt-2 border-t">
-            <span className="text-lg font-bold">
-              סה&quot;כ: ₪{grandTotal.toLocaleString()}
-            </span>
+          <div className="bg-teal-600 p-5 flex justify-between items-center text-white rounded-lg mt-2">
+            <div className="text-sm font-medium opacity-90">סך הכל לפני מע&quot;מ</div>
+            <div className="text-2xl font-black tracking-tight">סה&quot;כ: ₪{grandTotal.toLocaleString()}</div>
           </div>
         </CardContent>
       </Card>
 
       {/* Notes */}
-      <Card>
-        <CardHeader>
-          <CardTitle>הערות ותנאים</CardTitle>
+      <Card className="bg-white rounded-xl border border-slate-200 shadow-sm">
+        <CardHeader className="border-b border-slate-100 pb-4">
+          <CardTitle className="text-slate-700 text-lg">הערות ותנאים</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-1.5">
@@ -365,14 +380,6 @@ export function QuoteForm({
         </CardContent>
       </Card>
 
-      <div className="flex gap-3 justify-end">
-        <Button type="button" variant="outline" onClick={() => history.back()}>
-          ביטול
-        </Button>
-        <Button type="submit" disabled={lineItems.length === 0 || !clientId}>
-          צור הצעת מחיר
-        </Button>
-      </div>
     </form>
   );
 }

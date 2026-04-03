@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, FileText, ShoppingCart, Package, Wallet, Settings } from "lucide-react";
+import { LayoutDashboard, Users, FileText, ShoppingCart, Package, Wallet, Settings, Leaf } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/generated/prisma";
 
@@ -20,11 +20,20 @@ export function Sidebar({ role }: { role: Role }) {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed right-0 top-0 z-30 h-screen w-56 border-l" style={{ backgroundColor: "#2A9D8F", borderColor: "#227a6e" }}>
-      <div className="flex h-14 items-center justify-center border-b" style={{ borderColor: "#227a6e" }}>
-        <h1 className="text-lg font-bold text-white">בחברה בריאה</h1>
+    <aside className="fixed right-0 top-0 z-50 h-screen w-[220px] flex flex-col bg-teal-600 border-l border-teal-700/50 shadow-xl overflow-y-auto overflow-x-hidden">
+      {/* Logo area */}
+      <div className="p-6 flex flex-col items-center gap-2 border-b border-teal-500/30">
+        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-inner">
+          <Leaf className="w-7 h-7 text-teal-600 fill-teal-600" />
+        </div>
+        <div className="text-center">
+          <h1 className="text-white text-xl font-bold tracking-tight">בחברה בריאה</h1>
+          <p className="text-teal-100 text-[10px] opacity-80 leading-tight">ניהול בריאות ארגונית</p>
+        </div>
       </div>
-      <nav className="space-y-1 p-3">
+
+      {/* Nav */}
+      <nav className="flex-1 mt-4 px-2 space-y-1">
         {navItems
           .filter((item) => !item.adminOnly || role === "ADMIN")
           .map((item) => {
@@ -34,14 +43,13 @@ export function Sidebar({ role }: { role: Role }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 px-4 py-3 text-sm transition-colors duration-200",
                   isActive
-                    ? "text-white"
-                    : "text-white/70 hover:text-white"
+                    ? "text-white bg-teal-700 border-r-4 border-orange-400 font-bold"
+                    : "text-teal-50 hover:bg-teal-500/50 font-medium"
                 )}
-                style={isActive ? { backgroundColor: "#3ab5a5" } : undefined}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className="h-5 w-5 flex-shrink-0" />
                 {item.label}
               </Link>
             );

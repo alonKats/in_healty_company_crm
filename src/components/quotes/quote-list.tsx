@@ -3,16 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { PlusIcon } from "lucide-react";
 import { SortableHeader } from "@/components/ui/sortable-header";
 import type { Quote, Client, User } from "@/generated/prisma";
@@ -36,11 +26,11 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusColors: Record<string, string> = {
-  DRAFT: "bg-gray-100 text-gray-700 border-gray-200",
-  SENT: "bg-amber-100 text-amber-700 border-amber-200",
-  APPROVED: "bg-green-100 text-green-700 border-green-200",
-  REJECTED: "bg-red-100 text-red-700 border-red-200",
-  EXPIRED: "bg-gray-100 text-gray-700 border-gray-200",
+  DRAFT: "bg-slate-100 text-slate-600",
+  SENT: "bg-amber-100 text-amber-700",
+  APPROVED: "bg-emerald-100 text-emerald-700",
+  REJECTED: "bg-red-100 text-red-700",
+  EXPIRED: "bg-slate-100 text-slate-500",
 };
 
 function formatDate(date: Date | null | undefined): string {
@@ -76,93 +66,90 @@ export function QuoteList({ quotes }: QuoteListProps) {
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold">הצעות מחיר</h2>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">הצעות מחיר</h2>
+          <p className="text-slate-500 text-sm mt-1">ניהול הצעות מחיר ומעקב אחר סטטוס</p>
+        </div>
         <Link
           href="/quotes/new"
-          className={cn(buttonVariants({ variant: "default" }))}
+          className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-teal-600/20 active:scale-95"
         >
-          <PlusIcon className="h-4 w-4 ml-1" />
+          <PlusIcon className="h-4 w-4" />
           הצעה חדשה
         </Link>
       </div>
 
       {quotes.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-muted-foreground mb-4">אין הצעות מחיר</p>
+        <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-xl border border-slate-200 shadow-sm">
+          <p className="text-slate-400 text-sm">אין הצעות מחיר</p>
         </div>
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-right border-collapse">
+              <thead>
+                <tr className="bg-slate-50/50 border-b border-slate-200">
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="מספר" field="quoteNumber" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">לקוח</TableHead>
-                  <TableHead className="text-right">
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">לקוח</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="סכום" field="totalAmount" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="תאריך" field="createdAt" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">תוקף עד</TableHead>
-                  <TableHead className="text-right">אחראי</TableHead>
-                  <TableHead className="text-right">
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">תוקף עד</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">אחראי</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="סטטוס" field="status" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
                 {sorted.map((quote) => (
-                  <TableRow key={quote.id}>
-                    <TableCell>
-                      <Link
-                        href={`/quotes/${quote.id}`}
-                        className="font-medium text-primary hover:underline"
-                      >
+                  <tr key={quote.id} className="hover:bg-teal-50/30 transition-colors group">
+                    <td className="px-6 py-4">
+                      <Link href={`/quotes/${quote.id}`} className="font-bold text-teal-600 hover:underline">
                         #{quote.quoteNumber}
                       </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/clients/${quote.client.id}`}
-                        className="hover:underline text-sm"
-                      >
+                    </td>
+                    <td className="px-6 py-4">
+                      <Link href={`/clients/${quote.client.id}`} className="font-medium text-slate-800 hover:text-teal-600 transition-colors text-sm">
                         {quote.client.name}
                         {quote.client.company && (
-                          <span className="text-muted-foreground"> — {quote.client.company}</span>
+                          <span className="text-slate-400"> — {quote.client.company}</span>
                         )}
                       </Link>
-                    </TableCell>
-                    <TableCell className="text-sm font-medium">
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold text-slate-800">
                       ₪{Number(quote.totalAmount).toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {formatDate(quote.createdAt)}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {formatDate(quote.validUntil)}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {quote.assignedTo?.name ?? "—"}
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{formatDate(quote.createdAt)}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{formatDate(quote.validUntil)}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{quote.assignedTo?.name ?? "—"}</td>
+                    <td className="px-6 py-4">
                       <span className={cn(
-                        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
-                        statusColors[quote.status] ?? "bg-gray-100 text-gray-700 border-gray-200"
+                        "px-3 py-1 rounded-full text-[11px] font-bold",
+                        statusColors[quote.status] ?? "bg-slate-100 text-slate-600"
                       )}>
                         {statusLabels[quote.status] ?? quote.status}
                       </span>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              </tbody>
+            </table>
+          </div>
+          <div className="px-6 py-4 bg-slate-50/30 border-t border-slate-100">
+            <div className="text-sm text-slate-500">
+              סה&quot;כ <span className="font-bold text-slate-700">{quotes.length}</span> הצעות
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -9,7 +9,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface RevenueDataPoint {
   month: string;
@@ -50,24 +49,24 @@ export function RevenueChart({ data }: { data: RevenueDataPoint[] }) {
   }));
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>הכנסות — 6 חודשים אחרונים</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={chartData} margin={{ top: 4, right: 8, left: 8, bottom: 4 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-            <YAxis
-              tick={{ fontSize: 12 }}
-              tickFormatter={(v: number) => `₪${(v / 1000).toFixed(0)}k`}
-            />
-            <Tooltip formatter={formatTooltip} />
-            <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-lg font-bold text-slate-800">הכנסות חודשיות</h2>
+      </div>
+      <ResponsiveContainer width="100%" height={250}>
+        <BarChart data={chartData} margin={{ top: 4, right: 8, left: 8, bottom: 4 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+          <YAxis
+            tick={{ fontSize: 11, fill: "#94a3b8" }}
+            tickFormatter={(v: number) => `₪${(v / 1000).toFixed(0)}k`}
+            axisLine={false}
+            tickLine={false}
+          />
+          <Tooltip formatter={formatTooltip} contentStyle={{ borderRadius: "8px", border: "1px solid #e2e8f0", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} />
+          <Bar dataKey="total" fill="#2A9D8F" radius={[4, 4, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

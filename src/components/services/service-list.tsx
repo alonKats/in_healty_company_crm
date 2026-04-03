@@ -1,16 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { buttonVariants } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Category, CostItem, Service } from "@/generated/prisma";
@@ -38,8 +28,8 @@ export function ServiceList({ services }: ServiceListProps) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <p className="text-muted-foreground mb-4">אין מוצרים או שירותים במערכת</p>
-        <Link href="/services/new" className={cn(buttonVariants({ variant: "default" }))}>
-          <PlusIcon className="h-4 w-4 ml-1" />
+        <Link href="/services/new" className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-teal-600/20">
+          <PlusIcon className="h-4 w-4" />
           מוצר חדש
         </Link>
       </div>
@@ -56,88 +46,88 @@ export function ServiceList({ services }: ServiceListProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">מוצרים ושירותים</h2>
-        <Link href="/services/new" className={cn(buttonVariants({ variant: "default" }))}>
-          <PlusIcon className="h-4 w-4 ml-1" />
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">מוצרים ושירותים</h2>
+          <p className="text-slate-500 text-sm mt-1">ניהול קטלוג השירותים ומחירונים</p>
+        </div>
+        <Link
+          href="/services/new"
+          className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-teal-600/20 active:scale-95"
+        >
+          <PlusIcon className="h-4 w-4" />
           מוצר חדש
         </Link>
       </div>
 
       {Object.entries(grouped).map(([categoryName, categoryServices]) => (
-        <Card key={categoryName}>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">{categoryName}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">שם</TableHead>
-                  <TableHead className="text-right">סוג</TableHead>
-                  <TableHead className="text-right">מחיר (₪)</TableHead>
-                  <TableHead className="text-right">עלות (₪)</TableHead>
-                  <TableHead className="text-right">מרווח %</TableHead>
-                  <TableHead className="text-right">סטטוס</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+        <div key={categoryName} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">{categoryName}</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-right border-collapse">
+              <thead>
+                <tr className="border-b border-slate-100">
+                  <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">שם</th>
+                  <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">סוג</th>
+                  <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">מחיר (₪)</th>
+                  <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">עלות (₪)</th>
+                  <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">מרווח %</th>
+                  <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">סטטוס</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
                 {categoryServices.map((service) => {
                   const basePrice = Number(service.basePrice);
                   const totalCost = getTotalCost(service.costItems);
                   const margin = getMargin(basePrice, totalCost);
 
                   return (
-                    <TableRow key={service.id}>
-                      <TableCell>
-                        <Link
-                          href={`/services/${service.id}`}
-                          className="font-medium text-primary hover:underline"
-                        >
+                    <tr key={service.id} className="hover:bg-teal-50/30 transition-colors">
+                      <td className="px-6 py-4">
+                        <Link href={`/services/${service.id}`} className="font-bold text-slate-800 hover:text-teal-600 transition-colors">
                           {service.name}
                         </Link>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-sm">
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600">
                         {service.sourceType === "IN_HOUSE" ? "מוצר בית" : "ספק חיצוני"}
-                      </TableCell>
-                      <TableCell>₪{basePrice.toFixed(2)}</TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="px-6 py-4 text-sm font-bold text-slate-800">₪{basePrice.toFixed(2)}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600">
                         {service.costItems.length > 0 ? `₪${totalCost.toFixed(2)}` : "—"}
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="px-6 py-4 text-sm">
                         {margin !== null && service.costItems.length > 0 ? (
-                          <span
-                            className={
-                              margin >= 30
-                                ? "text-green-600 font-medium"
-                                : margin >= 10
-                                ? "text-yellow-600 font-medium"
-                                : "text-red-600 font-medium"
-                            }
-                          >
+                          <span className={cn(
+                            "px-2 py-0.5 rounded-full text-xs font-bold",
+                            margin >= 30
+                              ? "text-green-700 bg-green-50"
+                              : margin >= 10
+                              ? "text-amber-700 bg-amber-50"
+                              : "text-red-700 bg-red-50"
+                          )}>
                             {margin.toFixed(1)}%
                           </span>
-                        ) : (
-                          "—"
-                        )}
-                      </TableCell>
-                      <TableCell>
+                        ) : "—"}
+                      </td>
+                      <td className="px-6 py-4">
                         <span className={cn(
-                          "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+                          "px-3 py-1 rounded-full text-[11px] font-bold",
                           service.status === "ACTIVE"
-                            ? "bg-green-100 text-green-700 border-green-200"
-                            : "bg-gray-100 text-gray-700 border-gray-200"
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-slate-100 text-slate-600"
                         )}>
                           {service.status === "ACTIVE" ? "פעיל" : "לא פעיל"}
                         </span>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   );
                 })}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              </tbody>
+            </table>
+          </div>
+        </div>
       ))}
     </div>
   );

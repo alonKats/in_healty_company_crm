@@ -2,18 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { PlusIcon, PencilIcon, TrashIcon } from "lucide-react";
+import { PlusIcon, PencilIcon, TrashIcon, Wallet, History, Tag } from "lucide-react";
 import { SortableHeader } from "@/components/ui/sortable-header";
 import { AddExpenseDialog } from "./add-expense-dialog";
 import { EditExpenseDialog } from "./edit-expense-dialog";
@@ -42,6 +32,18 @@ const categoryLabels: Record<string, string> = {
   INSURANCE: "ביטוח",
   PROFESSIONAL_SERVICES: "שירותים מקצועיים",
   OTHER: "אחר",
+};
+
+const categoryColors: Record<string, string> = {
+  SALARY: "bg-blue-100 text-blue-700",
+  RAW_MATERIALS: "bg-teal-100 text-teal-700",
+  RENT: "bg-amber-100 text-amber-700",
+  TRAVEL: "bg-purple-100 text-purple-700",
+  MARKETING: "bg-orange-100 text-orange-700",
+  EQUIPMENT: "bg-indigo-100 text-indigo-700",
+  INSURANCE: "bg-green-100 text-green-700",
+  PROFESSIONAL_SERVICES: "bg-slate-100 text-slate-700",
+  OTHER: "bg-slate-100 text-slate-600",
 };
 
 const paymentMethodLabels: Record<string, string> = {
@@ -108,113 +110,135 @@ export function ExpenseList({ expenses, monthlySummary }: ExpenseListProps) {
 
   return (
     <div className="space-y-6">
-      {/* Summary Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">הוצאות החודש</p>
-            <p className="text-2xl font-bold mt-1">₪{monthTotal.toLocaleString("he-IL", { minimumFractionDigits: 2 })}</p>
-          </CardContent>
-        </Card>
-        {lastMonth && (
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">חודש קודם ({lastMonth.month})</p>
-              <p className="text-2xl font-bold mt-1">₪{lastMonth.total.toLocaleString("he-IL", { minimumFractionDigits: 2 })}</p>
-            </CardContent>
-          </Card>
-        )}
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">סה״כ רשומות</p>
-            <p className="text-2xl font-bold mt-1">{expenses.length}</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Header + Add Button */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">רשימת הוצאות</h2>
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">הוצאות</h2>
+          <p className="text-slate-500 text-sm mt-1">ניהול ומעקב אחר הוצאות העסק</p>
+        </div>
         <button
           onClick={() => setAddOpen(true)}
-          className={cn(buttonVariants({ variant: "default", size: "sm" }))}
+          className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-teal-600/20 active:scale-95"
         >
-          <PlusIcon className="h-4 w-4 ml-1" />
+          <PlusIcon className="h-4 w-4" />
           הוסף הוצאה
         </button>
       </div>
 
+      {/* Summary Cards */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-slate-500 text-xs font-medium mb-1">סה&quot;כ הוצאות החודש</p>
+            <h3 className="text-2xl font-bold text-slate-800">₪{monthTotal.toLocaleString("he-IL", { minimumFractionDigits: 0 })}</h3>
+          </div>
+          <div className="p-3 bg-teal-50 rounded-lg text-teal-600">
+            <Wallet className="w-7 h-7" />
+          </div>
+        </div>
+        {lastMonth && (
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-slate-500 text-xs font-medium mb-1">חודש קודם ({lastMonth.month})</p>
+              <h3 className="text-2xl font-bold text-slate-800">₪{lastMonth.total.toLocaleString("he-IL", { minimumFractionDigits: 0 })}</h3>
+            </div>
+            <div className="p-3 bg-orange-50 rounded-lg text-orange-500">
+              <History className="w-7 h-7" />
+            </div>
+          </div>
+        )}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-slate-500 text-xs font-medium mb-1">סה&quot;כ רשומות</p>
+            <h3 className="text-2xl font-bold text-slate-800">{expenses.length}</h3>
+          </div>
+          <div className="p-3 bg-blue-50 rounded-lg text-blue-500">
+            <Tag className="w-7 h-7" />
+          </div>
+        </div>
+      </div>
+
       {/* Table */}
       {expenses.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground text-sm">
-            אין הוצאות רשומות
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm py-12 text-center">
+          <p className="text-slate-400 text-sm">אין הוצאות רשומות</p>
+        </div>
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-right border-collapse">
+              <thead>
+                <tr className="bg-slate-50/50 border-b border-slate-200">
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="תאריך" field="date" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">תיאור</TableHead>
-                  <TableHead className="text-right">
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">תיאור</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="קטגוריה" field="category" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="סכום" field="amount" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
-                  </TableHead>
-                  <TableHead className="text-right">אמצעי תשלום</TableHead>
-                  <TableHead className="text-right w-20">פעולות</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">אמצעי תשלום</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">פעולות</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
                 {sorted.map((expense) => (
-                  <TableRow key={expense.id}>
-                    <TableCell className="text-sm">{formatDate(expense.date)}</TableCell>
-                    <TableCell className="text-sm font-medium max-w-[200px] truncate">
-                      {expense.description}
-                    </TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-blue-100 text-blue-700 border-blue-200">
+                  <tr key={expense.id} className="hover:bg-slate-50 transition-colors group">
+                    <td className="px-6 py-4 text-sm text-slate-700">{formatDate(expense.date)}</td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-medium text-slate-900 max-w-[200px] truncate block">
+                        {expense.description}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={cn(
+                        "px-2.5 py-1 rounded-full text-xs font-bold",
+                        categoryColors[expense.category] ?? "bg-slate-100 text-slate-600"
+                      )}>
                         {categoryLabels[expense.category] ?? expense.category}
                       </span>
-                    </TableCell>
-                    <TableCell className="text-sm font-medium">
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold text-slate-900">
                       ₪{expense.amount.toLocaleString("he-IL", { minimumFractionDigits: 2 })}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600">
                       {paymentMethodLabels[expense.paymentMethod] ?? expense.paymentMethod}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex items-center justify-center gap-1">
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => setEditExpense(expense)}
                           disabled={isPending}
+                          className="text-slate-400 hover:text-teal-600 transition-colors"
                         >
-                          <PencilIcon className="h-3.5 w-3.5" />
+                          <PencilIcon className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDelete(expense.id)}
                           disabled={isPending}
+                          className="text-slate-400 hover:text-red-500 transition-colors"
                         >
-                          <TrashIcon className="h-3.5 w-3.5 text-destructive" />
+                          <TrashIcon className="h-4 w-4" />
                         </Button>
                       </div>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              </tbody>
+            </table>
+          </div>
+          <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+            <span className="text-xs text-slate-500 font-medium">
+              מציג {sorted.length} מתוך {expenses.length} הוצאות
+            </span>
+          </div>
+        </div>
       )}
 
       <AddExpenseDialog open={addOpen} onOpenChange={setAddOpen} />

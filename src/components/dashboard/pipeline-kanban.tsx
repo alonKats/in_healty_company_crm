@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface Lead {
   id: string;
@@ -44,62 +43,55 @@ function formatCurrency(amount: number) {
   return `₪${amount.toLocaleString("he-IL", { maximumFractionDigits: 0 })}`;
 }
 
-function Column({
-  title,
-  count,
-  color,
-  children,
-}: {
+interface ColumnProps {
   title: string;
   count: number;
-  color: string;
+  dotColor: string;
+  labelColor: string;
   children: React.ReactNode;
-}) {
+}
+
+function Column({ title, count, dotColor, labelColor, children }: ColumnProps) {
   return (
-    <div className="min-w-[220px] flex-1">
-      <div className="flex items-center gap-2 mb-3 rounded-md px-2 py-1.5 bg-white border border-gray-200">
-        <span className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
-        <span className="font-semibold text-sm flex-1">{title}</span>
-        <span className="inline-flex items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs font-medium w-5 h-5">
-          {count}
-        </span>
+    <div className="flex-shrink-0 w-72 flex flex-col gap-4">
+      <div className="flex items-center justify-between px-2">
+        <span className={`text-sm font-bold ${labelColor}`}>{title} ({count})</span>
+        <span className={`w-2 h-2 rounded-full ${dotColor}`} />
       </div>
-      <div className="space-y-2">{children}</div>
+      <div className="space-y-3">{children}</div>
     </div>
   );
 }
 
-function PipelineCard({
-  href,
-  title,
-  subtitle,
-  days,
-}: {
+interface PipelineCardProps {
   href: string;
   title: string;
   subtitle?: string;
   days: number;
-}) {
+  borderColor: string;
+  extra?: React.ReactNode;
+}
+
+function PipelineCard({ href, title, subtitle, days, borderColor, extra }: PipelineCardProps) {
   return (
     <Link href={href}>
-      <Card className="hover:shadow-md transition-shadow cursor-pointer">
-        <CardContent className="p-3">
-          <p className="font-medium text-sm truncate">{title}</p>
-          {subtitle && (
-            <p className="text-xs text-muted-foreground mt-0.5 truncate">{subtitle}</p>
-          )}
-          <p className="text-xs text-muted-foreground mt-1">לפני {days} ימים</p>
-        </CardContent>
-      </Card>
+      <div className={`bg-white p-4 rounded-lg border-r-4 ${borderColor} shadow-sm hover:shadow-md transition-all cursor-pointer`}>
+        <h3 className="text-sm font-bold text-slate-800 truncate">{title}</h3>
+        {subtitle && <p className="text-xs text-slate-500 mt-1 truncate">{subtitle}</p>}
+        <div className="mt-3 flex justify-between items-center">
+          {extra ?? <span className="text-[10px] text-slate-400">לפני {days} ימים</span>}
+        </div>
+      </div>
     </Link>
   );
 }
 
 export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
   return (
-    <div className="overflow-x-auto">
-      <div className="flex gap-4 pb-4 min-w-max">
-        <Column title="ליד חדש" count={pipeline.newLeads.length} color="#9CA3AF">
+    <div>
+      <h2 className="text-lg font-bold text-slate-800 mb-4">תהליך מכירה (Pipeline)</h2>
+      <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth" style={{ height: "auto", minHeight: "200px" }}>
+        <Column title="ליד חדש" count={pipeline.newLeads.length} dotColor="bg-slate-300" labelColor="text-slate-600">
           {pipeline.newLeads.map((lead) => (
             <PipelineCard
               key={lead.id}
@@ -107,11 +99,13 @@ export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
               title={lead.name}
               subtitle={lead.company ?? undefined}
               days={daysAgo(lead.createdAt)}
+              borderColor="border-slate-300"
+              extra={<span className="text-[10px] text-slate-400">לפני {daysAgo(lead.createdAt)} ימים</span>}
             />
           ))}
         </Column>
 
-        <Column title="הצעה נשלחה" count={pipeline.sentQuotes.length} color="#F59E0B">
+        <Column title="הצעה נשלחה" count={pipeline.sentQuotes.length} dotColor="bg-amber-400" labelColor="text-amber-600">
           {pipeline.sentQuotes.map((q) => (
             <PipelineCard
               key={q.id}
@@ -119,11 +113,13 @@ export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
               title={q.client.name}
               subtitle={formatCurrency(q.totalAmount)}
               days={daysAgo(q.createdAt)}
+              borderColor="border-amber-400"
+              extra={<span className="text-[10px] text-slate-400">לפני {daysAgo(q.createdAt)} ימים</span>}
             />
           ))}
         </Column>
 
-        <Column title="הצעה אושרה" count={pipeline.approvedQuotes.length} color="#22C55E">
+        <Column title="הצעה אושרה" count={pipeline.approvedQuotes.length} dotColor="bg-teal-500" labelColor="text-teal-600">
           {pipeline.approvedQuotes.map((q) => (
             <PipelineCard
               key={q.id}
@@ -131,11 +127,18 @@ export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
               title={q.client.name}
               subtitle={formatCurrency(q.totalAmount)}
               days={daysAgo(q.createdAt)}
+              borderColor="border-teal-500"
+              extra={
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-teal-600">{formatCurrency(q.totalAmount)}</span>
+                  <span className="text-[10px] text-teal-600 font-bold bg-teal-50 px-2 py-0.5 rounded">מאושר</span>
+                </div>
+              }
             />
           ))}
         </Column>
 
-        <Column title="הזמנה פעילה" count={pipeline.activeOrders.length} color="#3B82F6">
+        <Column title="הזמנה פעילה" count={pipeline.activeOrders.length} dotColor="bg-blue-500" labelColor="text-blue-600">
           {pipeline.activeOrders.map((o) => (
             <PipelineCard
               key={o.id}
@@ -143,11 +146,13 @@ export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
               title={o.client.name}
               subtitle={formatCurrency(o.totalAmount)}
               days={daysAgo(o.createdAt)}
+              borderColor="border-blue-500"
+              extra={<span className="text-[10px] text-slate-400">לפני {daysAgo(o.createdAt)} ימים</span>}
             />
           ))}
         </Column>
 
-        <Column title="בוצע" count={pipeline.completedUnpaid.length} color="#2A9D8F">
+        <Column title="בוצע" count={pipeline.completedUnpaid.length} dotColor="bg-green-500" labelColor="text-green-600">
           {pipeline.completedUnpaid.map((o) => (
             <PipelineCard
               key={o.id}
@@ -155,6 +160,8 @@ export function PipelineKanban({ pipeline }: { pipeline: Pipeline }) {
               title={o.client.name}
               subtitle={formatCurrency(o.totalAmount)}
               days={daysAgo(o.createdAt)}
+              borderColor="border-green-500"
+              extra={<span className="text-[10px] text-slate-400">לפני {daysAgo(o.createdAt)} ימים</span>}
             />
           ))}
         </Column>
