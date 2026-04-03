@@ -34,3 +34,6 @@ Chronological record of development work.
 | 2026-04-03 | b7b52ea | feat: rebuild seed with real 2026 data — correct categories, products, and sales from PDF | prisma/seed.ts |
 | 2026-04-03 | 16d8101 | feat: add 2025 historical sales data — 44 sales, 15 months of revenue history | prisma/seed.ts |
 | 2026-04-03 | b9ca280 | fix: UX improvements — searchable dropdowns, chart labels, quick-add lead, date pickers, KPI context | src/components/dashboard/kpi-cards.tsx, src/components/dashboard/pipeline-kanban.tsx, src/components/dashboard/quick-add-lead.tsx, src/components/dashboard/revenue-chart.tsx, src/components/expenses/add-expense-dialog.tsx, +5 more |
+| 2026-04-03 | aa37275 | chore: add Stitch design reference files | .stitch-designs/screen-1.html, .stitch-designs/screen-2.html, .stitch-designs/screen-3.html, .stitch-designs/screen-4.html, DEVLOG.md |
+| 2026-04-03 | 5a85743 | feat: replace attention list with action stream + mini calendar on dashboard | src/app/(dashboard)/page.tsx, src/components/dashboard/action-stream.tsx, src/components/dashboard/mini-calendar.tsx, src/lib/queries/dashboard-queries.ts |
+| 2026-04-03 | 83b7e10 | feat: add service interest chips to quick-add lead dialog | src/components/dashboard/quick-add-lead.tsx, src/lib/actions/client-actions.ts |
