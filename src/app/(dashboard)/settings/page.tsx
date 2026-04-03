@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { serialize } from "@/lib/utils";
 import { getCategories } from "@/lib/queries/service-queries";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserManagement } from "@/components/settings/user-management";
@@ -24,10 +25,10 @@ export default async function SettingsPage() {
           <TabsTrigger value="categories">קטגוריות</TabsTrigger>
         </TabsList>
         <TabsContent value="users">
-          <UserManagement users={users} />
+          <UserManagement users={serialize(users)} />
         </TabsContent>
         <TabsContent value="categories">
-          <CategoryManagement categories={categories} />
+          <CategoryManagement categories={serialize(categories)} />
         </TabsContent>
       </Tabs>
     </div>

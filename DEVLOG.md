@@ -22,3 +22,9 @@ Chronological record of development work.
 | 2026-04-03 | c0c2dda | feat: seed Q1 2026 income data — 15 orders with payments from Oren's revenue CSV | prisma/seed.ts |
 | 2026-04-03 | f8f1d12 | fix: add "use client" to service-list — buttonVariants requires client context | src/components/services/service-list.tsx |
 | 2026-04-03 | 88f573c | fix: serialize Decimal/Date objects before passing to client components | src/app/(dashboard)/clients/[id]/page.tsx, src/app/(dashboard)/clients/page.tsx, src/app/(dashboard)/orders/[id]/page.tsx, src/app/(dashboard)/orders/new/page.tsx, src/app/(dashboard)/orders/page.tsx, +7 more |
+| 2026-04-03 | 7b5b525 | fix: serialize Decimal/Date objects before passing to client components | DEVLOG.md |
+| 2026-04-03 | 90eee51 | feat: add Expense model to schema | prisma/schema.prisma |
+| 2026-04-03 | a8a8110 | feat: apply InHealthy design system — teal sidebar, color palette, status badges | src/app/(dashboard)/layout.tsx, src/app/globals.css, src/components/clients/client-list.tsx, src/components/dashboard/kpi-cards.tsx, src/components/dashboard/pipeline-kanban.tsx, +5 more |
+| 2026-04-03 | c5137e5 | feat: add expenses module — CRUD with categories, monthly summary | src/app/(dashboard)/expenses/page.tsx, src/components/expenses/add-expense-dialog.tsx, src/components/expenses/edit-expense-dialog.tsx, src/components/expenses/expense-list.tsx, src/components/layout/sidebar.tsx, +2 more |
+| 2026-04-03 | 6f32b43 | feat: add client editing — edit dialog on client detail page | src/app/(dashboard)/clients/[id]/page.tsx, src/components/clients/client-detail.tsx, src/components/clients/edit-client-dialog.tsx |
+| 2026-04-03 | c9a3642 | feat: add sortable table columns — clients, quotes, orders, expenses | src/components/clients/client-list.tsx, src/components/expenses/expense-list.tsx, src/components/orders/order-list.tsx, src/components/quotes/quote-list.tsx, src/components/ui/sortable-header.tsx |
