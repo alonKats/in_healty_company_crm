@@ -17,3 +17,8 @@ Chronological record of development work.
 | 2026-04-03 | 0db1b6f | feat: add dashboard — KPIs, pipeline kanban, attention list, revenue chart | src/app/(dashboard)/page.tsx, src/components/dashboard/attention-list.tsx, src/components/dashboard/kpi-cards.tsx, src/components/dashboard/pipeline-kanban.tsx, src/components/dashboard/revenue-chart.tsx, +1 more |
 | 2026-04-03 | 1c43152 | feat: add settings page — user management, categories (admin only) | src/app/(dashboard)/settings/page.tsx, src/components/settings/category-management.tsx, src/components/settings/user-management.tsx, src/lib/actions/settings-actions.ts |
 | 2026-04-03 | 8bd4d13 | feat: add PDF quote generation — RTL Hebrew, grouped by category | src/app/api/pdf/quote/[id]/document.tsx, src/app/api/pdf/quote/[id]/route.tsx |
+| 2026-04-03 | e9ebef7 | fix: update seed script for Prisma 7 adapter, add seed config to prisma.config.ts | .claude/commands/update-architecture.md, .gitignore, ARCHITECTURE.md, DECISIONS.md, DEVLOG.md, +2 more |
+| 2026-04-03 | fed2e95 | feat: seed 82 clients from Oren's Excel — with contacts, status, source | prisma/seed.ts |
+| 2026-04-03 | c0c2dda | feat: seed Q1 2026 income data — 15 orders with payments from Oren's revenue CSV | prisma/seed.ts |
+| 2026-04-03 | f8f1d12 | fix: add "use client" to service-list — buttonVariants requires client context | src/components/services/service-list.tsx |
+| 2026-04-03 | 88f573c | fix: serialize Decimal/Date objects before passing to client components | src/app/(dashboard)/clients/[id]/page.tsx, src/app/(dashboard)/clients/page.tsx, src/app/(dashboard)/orders/[id]/page.tsx, src/app/(dashboard)/orders/new/page.tsx, src/app/(dashboard)/orders/page.tsx, +7 more |
