@@ -1,0 +1,285 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+enum ClientSource {
+  REFERRAL
+  WEBSITE
+  COLD_OUTREACH
+  LINKEDIN
+  CONFERENCE
+  CAMPAIGN
+  MAILING
+  INBOUND
+  OTHER
+}
+
+enum ClientStatus {
+  LEAD
+  ACTIVE
+  DORMANT
+}
+
+enum ServiceSourceType {
+  IN_HOUSE
+  EXTERNAL_SUPPLIER
+}
+
+enum ServiceStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CostItemType {
+  FIXED
+  PER_UNIT
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum QuoteSource {
+  OUTBOUND
+  INBOUND
+  REFERRAL
+}
+
+enum OrderStatus {
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum OrderType {
+  SINGLE
+  BUNDLE
+}
+
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  CREDIT_CARD
+  CHECK
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PARTIAL
+}
+
+enum ActivityType {
+  CALL
+  EMAIL
+  WHATSAPP
+  MEETING
+  NOTE
+  MAILING
+}
+
+enum ActivityDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum ActivitySource {
+  MANUAL
+  GMAIL
+  WHATSAPP_API
+}
+
+model User {
+  id           String     @id @default(uuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  role         Role       @default(STAFF)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  activities   Activity[]
+  assignedClients Client[] @relation("AssignedClients")
+  assignedQuotes  Quote[]  @relation("AssignedQuotes")
+}
+
+model Client {
+  id           String       @id @default(uuid())
+  name         String
+  company      String?
+  phone        String?
+  email        String?
+  address      String?
+  source       ClientSource @default(OTHER)
+  status       ClientStatus @default(LEAD)
+  assignedToId String?
+  assignedTo   User?        @relation("AssignedClients", fields: [assignedToId], references: [id])
+  notes        String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  contacts     Contact[]
+  activities   Activity[]
+  quotes       Quote[]
+  orders       Order[]
+}
+
+model Contact {
+  id        String  @id @default(uuid())
+  clientId  String
+  client    Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name      String
+  role      String?
+  phone     String?
+  email     String?
+  isPrimary Boolean @default(false)
+}
+
+model Category {
+  id        String     @id @default(uuid())
+  name      String
+  parentId  String?
+  parent    Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryHierarchy")
+  sortOrder Int        @default(0)
+  services  Service[]
+  orderItems OrderItem[]
+}
+
+model Service {
+  id          String            @id @default(uuid())
+  name        String
+  description String?
+  categoryId  String
+  category    Category          @relation(fields: [categoryId], references: [id])
+  sourceType  ServiceSourceType @default(IN_HOUSE)
+  basePrice   Decimal
+  status      ServiceStatus     @default(ACTIVE)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  costItems   CostItem[]
+  quoteItems  QuoteItem[]
+  orderItems  OrderItem[]
+}
+
+model CostItem {
+  id          String       @id @default(uuid())
+  serviceId   String
+  service     Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  description String
+  amount      Decimal
+  type        CostItemType @default(FIXED)
+}
+
+model Quote {
+  id           String      @id @default(uuid())
+  clientId     String
+  client       Client      @relation(fields: [clientId], references: [id])
+  quoteNumber  Int         @default(autoincrement())
+  status       QuoteStatus @default(DRAFT)
+  validUntil   DateTime?
+  eventDate    DateTime?
+  totalAmount  Decimal     @default(0)
+  source       QuoteSource @default(OUTBOUND)
+  assignedToId String?
+  assignedTo   User?       @relation("AssignedQuotes", fields: [assignedToId], references: [id])
+  notes        String?
+  terms        String?
+  pdfUrl       String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  items        QuoteItem[]
+  orders       Order[]
+}
+
+model QuoteItem {
+  id          String   @id @default(uuid())
+  quoteId     String
+  quote       Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  serviceId   String?
+  service     Service? @relation(fields: [serviceId], references: [id])
+  category    String?
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Decimal
+  costPerUnit Decimal?
+  total       Decimal
+  notes       String?
+  sortOrder   Int      @default(0)
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  clientId      String
+  client        Client      @relation(fields: [clientId], references: [id])
+  quoteId       String?
+  quote         Quote?      @relation(fields: [quoteId], references: [id])
+  orderNumber   Int         @default(autoincrement())
+  status        OrderStatus @default(CONFIRMED)
+  type          OrderType   @default(SINGLE)
+  eventDate     DateTime?
+  eventLocation String?
+  totalAmount   Decimal     @default(0)
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  items         OrderItem[]
+  payments      Payment[]
+}
+
+model OrderItem {
+  id          String    @id @default(uuid())
+  orderId     String
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  serviceId   String?
+  service     Service?  @relation(fields: [serviceId], references: [id])
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  description String
+  quantity    Int       @default(1)
+  unitPrice   Decimal
+  costPerUnit Decimal?
+  total       Decimal
+  notes       String?
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  orderId       String
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  amount        Decimal
+  method        PaymentMethod @default(TRANSFER)
+  date          DateTime
+  invoiceNumber String?
+  status        PaymentStatus @default(PENDING)
+  notes         String?
+}
+
+model Activity {
+  id          String            @id @default(uuid())
+  clientId    String
+  client      Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  type        ActivityType
+  direction   ActivityDirection  @default(OUTBOUND)
+  subject     String?
+  content     String
+  source      ActivitySource    @default(MANUAL)
+  metadata    Json?
+  date        DateTime
+  createdById String
+  createdBy   User              @relation(fields: [createdById], references: [id])
+  createdAt   DateTime          @default(now())
+}
