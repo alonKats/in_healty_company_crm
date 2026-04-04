@@ -37,3 +37,25 @@ Chronological record of development work.
 | 2026-04-03 | aa37275 | chore: add Stitch design reference files | .stitch-designs/screen-1.html, .stitch-designs/screen-2.html, .stitch-designs/screen-3.html, .stitch-designs/screen-4.html, DEVLOG.md |
 | 2026-04-03 | 5a85743 | feat: replace attention list with action stream + mini calendar on dashboard | src/app/(dashboard)/page.tsx, src/components/dashboard/action-stream.tsx, src/components/dashboard/mini-calendar.tsx, src/lib/queries/dashboard-queries.ts |
 | 2026-04-03 | 83b7e10 | feat: add service interest chips to quick-add lead dialog | src/components/dashboard/quick-add-lead.tsx, src/lib/actions/client-actions.ts |
+| 2026-04-03 | a557e49 | feat: add calendar view — monthly grid with color-coded events and capacity indicators | DEVLOG.md, src/app/(dashboard)/calendar/page.tsx, src/components/calendar/event-calendar.tsx, src/components/layout/sidebar.tsx, src/lib/queries/calendar-queries.ts |
+| 2026-04-03 | fa02506 | feat: add provider directory — Prisma models, CRUD, service linkage with margin tracking | prisma/schema.prisma, src/app/(dashboard)/providers/[id]/edit/page.tsx, src/app/(dashboard)/providers/[id]/page.tsx, src/app/(dashboard)/providers/new/page.tsx, src/app/(dashboard)/providers/page.tsx, +6 more |
+| 2026-04-04 | 75be017 | fix: extract delete button to client component — fixes onClick in server component | src/app/(dashboard)/services/[id]/page.tsx, src/components/services/delete-service-button.tsx |
+| 2026-04-04 | cb71490 | feat: add isOnMailingList boolean to Client model | prisma/migrations/add_client_mailing_list/migration.sql, prisma/schema.prisma |
+| 2026-04-04 | 7900adb | feat: add reusable ConfirmDeleteDialog component | src/components/ui/alert-dialog.tsx, src/components/ui/confirm-delete-dialog.tsx |
+| 2026-04-04 | a162a2b | feat: add clickable contact channel icons and mailing list toggle to client detail | src/components/clients/client-detail.tsx, src/components/clients/edit-client-dialog.tsx, src/lib/actions/client-actions.ts, src/lib/phone-utils.ts |
+| 2026-04-04 | 0300a4e | feat: add activity edit/delete with hover icons and confirmation dialog | src/components/clients/activity-feed.tsx, src/components/clients/client-detail.tsx, src/components/clients/edit-activity-dialog.tsx, src/lib/actions/activity-actions.ts |
+| 2026-04-04 | b9628dc | feat: add contact channel icons (tel/mail/whatsapp), edit contact dialog | src/components/clients/contact-list.tsx, src/components/clients/edit-contact-dialog.tsx, src/lib/actions/client-actions.ts |
+| 2026-04-04 | 19b78d1 | feat: add last-contact and pending-quotes filters to client list | src/components/clients/client-list.tsx, src/lib/queries/client-queries.ts |
+| 2026-04-04 | df16a42 | feat: add edit/delete actions to quote list and client detail quotes tab | src/components/clients/client-detail.tsx, src/components/quotes/quote-list.tsx, src/lib/actions/quote-actions.ts |
+| 2026-04-04 | f447dcf | feat: add delete confirmation to client list and detail pages | src/components/clients/client-detail.tsx, src/components/clients/client-list.tsx |
+| 2026-04-04 | 9a6ea19 | feat: add edit/delete action icons to provider list | src/components/providers/provider-list.tsx |
+| 2026-04-04 | 978bcb2 | feat: add source type filter (in-house / external) to service list | src/components/services/service-list.tsx |
+| 2026-04-04 | 708946d | feat: add edit/delete to order list, payment edit dialog, order actions in client detail | src/components/clients/client-detail.tsx, src/components/orders/edit-payment-dialog.tsx, src/components/orders/order-detail.tsx, src/components/orders/order-list.tsx, src/lib/actions/order-actions.ts |
+| 2026-04-04 | bf80bbe | feat: add historical data import script skeleton (blocked on Oren's XLSX) | package-lock.json, package.json, prisma/import-history.ts |
+| 2026-04-04 | 9e7cb17 | feat: implement full Excel data import — 12 sheets, 809 activities, 123 contacts | prisma/import-history.ts |
+| 2026-04-04 | e65ee81 | fix: default descending sort on lists, contact icons fallback to primary contact | src/components/clients/client-detail.tsx, src/components/clients/client-list.tsx |
+| 2026-04-04 | 790fc0f | refactor: simplify KPI cards to 4 financial metrics | src/components/dashboard/action-stream.tsx, src/components/dashboard/kpi-cards.tsx |
+| 2026-04-04 | b70a2ec | feat: add recent activity feed component for dashboard | src/components/dashboard/recent-activity.tsx |
+| 2026-04-04 | f3e6851 | feat: replace action stream with focused action items (pending quotes + upcoming events) | src/components/dashboard/action-items.tsx |
+| 2026-04-04 | d35e323 | refactor: rewrite dashboard queries for action-first layout | src/lib/queries/dashboard-queries.ts |
+| 2026-04-04 | 342054a | feat: add report queries — revenue, suppliers, funnel, payments | src/lib/queries/report-queries.ts |
