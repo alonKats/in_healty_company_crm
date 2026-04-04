@@ -25,7 +25,7 @@ export async function getClients(filters?: ClientFilters) {
     where,
     include: {
       assignedTo: { select: { id: true, name: true } },
-      quotes: { where: { status: { in: ["DRAFT", "SENT"] } }, select: { id: true } },
+      quotes: { where: { status: { in: ["DRAFT", "SENT"] } }, select: { id: true, status: true } },
       activities: { orderBy: { date: "desc" }, take: 1, select: { date: true } },
     },
     orderBy: { createdAt: "desc" },

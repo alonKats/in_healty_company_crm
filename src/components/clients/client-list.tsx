@@ -17,7 +17,7 @@ import type { Client, User, Quote, Activity } from "@/generated/prisma";
 
 interface ClientWithRelations extends Client {
   assignedTo: Pick<User, "id" | "name"> | null;
-  quotes: Pick<Quote, "id">[];
+  quotes: Pick<Quote, "id" | "status">[];
   activities: Pick<Activity, "date">[];
 }
 
@@ -65,6 +65,8 @@ function daysSince(date: Date | string): number {
 export function ClientList({ clients, users }: ClientListProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [lastContactFilter, setLastContactFilter] = useState<string>("ALL");
+  const [pendingQuotesOnly, setPendingQuotesOnly] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sortField, setSortField] = useState("name");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
@@ -84,7 +86,27 @@ export function ClientList({ clients, users }: ClientListProps) {
       !search ||
       client.name.toLowerCase().includes(search.toLowerCase()) ||
       (client.company ?? "").toLowerCase().includes(search.toLowerCase());
-    return matchesStatus && matchesSearch;
+
+    let matchesLastContact = true;
+    if (lastContactFilter !== "ALL") {
+      const lastActivity = client.activities[0]?.date;
+      if (lastContactFilter === "NONE") {
+        matchesLastContact = !lastActivity;
+      } else if (!lastActivity) {
+        matchesLastContact = false;
+      } else {
+        const days = daysSince(lastActivity);
+        if (lastContactFilter === "TODAY") matchesLastContact = days === 0;
+        else if (lastContactFilter === "WEEK") matchesLastContact = days <= 7;
+        else if (lastContactFilter === "MONTH") matchesLastContact = days <= 30;
+        else if (lastContactFilter === "30PLUS") matchesLastContact = days > 30;
+        else if (lastContactFilter === "60PLUS") matchesLastContact = days > 60;
+      }
+    }
+
+    const matchesPendingQuotes = !pendingQuotesOnly || client.quotes.some((q) => q.status === "SENT");
+
+    return matchesStatus && matchesSearch && matchesLastContact && matchesPendingQuotes;
   });
 
   const sorted = Array.from(filtered).sort((a, b) => {
@@ -162,6 +184,38 @@ export function ClientList({ clients, users }: ClientListProps) {
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      {/* Additional Filters */}
+      <div className="flex flex-wrap gap-3">
+        <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 flex items-center gap-3">
+          <span className="text-xs font-medium text-slate-400 whitespace-nowrap">מגע אחרון:</span>
+          <Select value={lastContactFilter} onValueChange={(v) => v && setLastContactFilter(v)}>
+            <SelectTrigger className="w-auto border-none shadow-none text-sm font-medium text-slate-700 focus:ring-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">הכל</SelectItem>
+              <SelectItem value="TODAY">היום</SelectItem>
+              <SelectItem value="WEEK">השבוע</SelectItem>
+              <SelectItem value="MONTH">החודש</SelectItem>
+              <SelectItem value="30PLUS">30+ ימים</SelectItem>
+              <SelectItem value="60PLUS">60+ ימים</SelectItem>
+              <SelectItem value="NONE">ללא מגע</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <button
+          onClick={() => setPendingQuotesOnly(!pendingQuotesOnly)}
+          className={cn(
+            "px-4 py-2 rounded-xl shadow-sm border text-xs font-medium transition-colors",
+            pendingQuotesOnly
+              ? "bg-amber-50 border-amber-200 text-amber-700"
+              : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
+          )}
+        >
+          הצעות ממתינות
+        </button>
       </div>
 
       {/* Table */}
