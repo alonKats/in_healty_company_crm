@@ -66,6 +66,7 @@ export async function updateClient(id: string, formData: FormData) {
   const status = formData.get("status") as ClientStatus;
   const assignedToId = formData.get("assignedToId") as string | null;
   const notes = formData.get("notes") as string | null;
+  const isOnMailingList = formData.get("isOnMailingList") === "on";
 
   await prisma.client.update({
     where: { id },
@@ -79,12 +80,23 @@ export async function updateClient(id: string, formData: FormData) {
       status,
       assignedToId: assignedToId || null,
       notes: notes || null,
+      isOnMailingList,
     },
   });
 
   revalidatePath("/clients");
   revalidatePath(`/clients/${id}`);
   redirect(`/clients/${id}`);
+}
+
+export async function toggleMailingList(clientId: string, value: boolean) {
+  await prisma.client.update({
+    where: { id: clientId },
+    data: { isOnMailingList: value },
+  });
+
+  revalidatePath(`/clients/${clientId}`);
+  revalidatePath("/clients");
 }
 
 export async function deleteClient(id: string) {

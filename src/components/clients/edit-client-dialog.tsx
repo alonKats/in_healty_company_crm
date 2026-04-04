@@ -158,6 +158,16 @@ export function EditClientDialog({ client, users, open, onOpenChange }: EditClie
                 </Select>
               </div>
             )}
+            <div className="flex items-center gap-2 sm:col-span-2">
+              <input
+                type="checkbox"
+                id="edit-client-mailing"
+                name="isOnMailingList"
+                defaultChecked={client.isOnMailingList}
+                className="h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+              />
+              <Label htmlFor="edit-client-mailing">רשום לרשימת דיוור</Label>
+            </div>
             <div className="space-y-1.5 sm:col-span-2">
               <Label htmlFor="edit-client-notes">הערות</Label>
               <Textarea

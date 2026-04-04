@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -15,11 +15,15 @@ import {
   FileTextIcon,
   ShoppingBagIcon,
   PencilIcon,
+  MessageCircleIcon,
+  NewspaperIcon,
 } from "lucide-react";
 import { ActivityFeed } from "./activity-feed";
 import { ContactList } from "./contact-list";
 import { AddActivityDialog } from "./add-activity-dialog";
 import { EditClientDialog } from "./edit-client-dialog";
+import { toWhatsAppLink } from "@/lib/phone-utils";
+import { toggleMailingList } from "@/lib/actions/client-actions";
 import type { Client, Contact, Activity, Quote, Order, User } from "@/generated/prisma";
 
 interface ActivityWithUser extends Activity {
@@ -70,6 +74,33 @@ const orderStatusLabels: Record<string, string> = {
   CANCELLED: "בוטל",
 };
 
+function MailingListBadge({ clientId, isOnMailingList }: { clientId: string; isOnMailingList: boolean }) {
+  const [isPending, startTransition] = useTransition();
+
+  function handleToggle() {
+    startTransition(async () => {
+      await toggleMailingList(clientId, !isOnMailingList);
+    });
+  }
+
+  return (
+    <button
+      onClick={handleToggle}
+      disabled={isPending}
+      className={cn(
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors",
+        isOnMailingList
+          ? "bg-teal-50 text-teal-700 hover:bg-teal-100"
+          : "bg-slate-100 text-slate-400 hover:bg-slate-200"
+      )}
+      title={isOnMailingList ? "רשום לדיוור — לחץ להסרה" : "לא רשום לדיוור — לחץ להוספה"}
+    >
+      <NewspaperIcon className="h-3.5 w-3.5" />
+      {isPending ? "..." : isOnMailingList ? "רשום לדיוור" : "דיוור"}
+    </button>
+  );
+}
+
 export function ClientDetail({ client, users }: ClientDetailProps) {
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -97,25 +128,46 @@ export function ClientDetail({ client, users }: ClientDetailProps) {
               {client.company && (
                 <p className="text-muted-foreground">{client.company}</p>
               )}
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-wrap gap-1.5 mt-1">
                 {client.phone && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <PhoneIcon className="h-4 w-4" />
+                  <a
+                    href={`tel:${client.phone}`}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-teal-50 text-slate-600 hover:text-teal-700 transition-colors text-xs font-medium"
+                    title="התקשר"
+                  >
+                    <PhoneIcon className="h-3.5 w-3.5" />
                     {client.phone}
-                  </div>
+                  </a>
                 )}
                 {client.email && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MailIcon className="h-4 w-4" />
+                  <a
+                    href={`mailto:${client.email}`}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-teal-50 text-slate-600 hover:text-teal-700 transition-colors text-xs font-medium"
+                    title="שלח מייל"
+                  >
+                    <MailIcon className="h-3.5 w-3.5" />
                     {client.email}
-                  </div>
+                  </a>
+                )}
+                {toWhatsAppLink(client.phone) && (
+                  <a
+                    href={toWhatsAppLink(client.phone)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 transition-colors text-xs font-medium"
+                    title="שלח וואטסאפ"
+                  >
+                    <MessageCircleIcon className="h-3.5 w-3.5" />
+                    וואטסאפ
+                  </a>
                 )}
                 {client.address && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPinIcon className="h-4 w-4" />
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium">
+                    <MapPinIcon className="h-3.5 w-3.5" />
                     {client.address}
-                  </div>
+                  </span>
                 )}
+                <MailingListBadge clientId={client.id} isOnMailingList={client.isOnMailingList} />
               </div>
               {client.assignedTo && (
                 <p className="text-xs text-muted-foreground">
