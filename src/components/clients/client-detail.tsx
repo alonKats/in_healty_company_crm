@@ -17,7 +17,10 @@ import {
   PencilIcon,
   MessageCircleIcon,
   NewspaperIcon,
+  Trash2Icon,
 } from "lucide-react";
+import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
+import { deleteClient } from "@/lib/actions/client-actions";
 import { ActivityFeed } from "./activity-feed";
 import { ContactList } from "./contact-list";
 import { AddActivityDialog } from "./add-activity-dialog";
@@ -104,6 +107,14 @@ function MailingListBadge({ clientId, isOnMailingList }: { clientId: string; isO
 export function ClientDetail({ client, users }: ClientDetailProps) {
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, startDeleteTransition] = useTransition();
+
+  function handleDelete() {
+    startDeleteTransition(async () => {
+      await deleteClient(client.id);
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -190,6 +201,13 @@ export function ClientDetail({ client, users }: ClientDetailProps) {
                 <FileTextIcon className="h-4 w-4 ml-1" />
                 הצעת מחיר
               </Link>
+              <button
+                onClick={() => setDeleteDialogOpen(true)}
+                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-red-600 hover:text-red-700 hover:bg-red-50")}
+              >
+                <Trash2Icon className="h-4 w-4 ml-1" />
+                מחק
+              </button>
             </div>
           </div>
         </CardContent>
@@ -306,6 +324,15 @@ export function ClientDetail({ client, users }: ClientDetailProps) {
         users={users}
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
+      />
+
+      <ConfirmDeleteDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+        title="מחיקת לקוח"
+        description="למחיקת לקוח יימחקו גם כל אנשי הקשר, הפעילויות, ההצעות וההזמנות שלו. פעולה זו אינה ניתנת לביטול."
+        isPending={isDeleting}
       />
     </div>
   );

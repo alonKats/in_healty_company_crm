@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
@@ -10,8 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { PlusIcon, SearchIcon, Trash2Icon, PencilIcon } from "lucide-react";
 import { AddClientDialog } from "./add-client-dialog";
+import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
+import { deleteClient } from "@/lib/actions/client-actions";
 import { SortableHeader } from "@/components/ui/sortable-header";
 import type { Client, User, Quote, Activity } from "@/generated/prisma";
 
@@ -70,6 +72,16 @@ export function ClientList({ clients, users }: ClientListProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sortField, setSortField] = useState("name");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
+  const [isDeleting, startDeleteTransition] = useTransition();
+
+  function handleDeleteClient() {
+    if (!deletingClientId) return;
+    startDeleteTransition(async () => {
+      await deleteClient(deletingClientId);
+      setDeletingClientId(null);
+    });
+  }
 
   function handleSort(field: string) {
     if (field === sortField) {
@@ -243,6 +255,7 @@ export function ClientList({ clients, users }: ClientListProps) {
                   <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="סטטוס" field="status" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
                   </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-20">פעולות</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -298,6 +311,24 @@ export function ClientList({ clients, users }: ClientListProps) {
                           {statusLabels[client.status] ?? client.status}
                         </span>
                       </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Link
+                            href={`/clients/${client.id}`}
+                            className="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-teal-600 transition-colors"
+                            title="ערוך"
+                          >
+                            <PencilIcon className="h-3.5 w-3.5" />
+                          </Link>
+                          <button
+                            onClick={() => setDeletingClientId(client.id)}
+                            className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors"
+                            title="מחק"
+                          >
+                            <Trash2Icon className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
@@ -312,6 +343,14 @@ export function ClientList({ clients, users }: ClientListProps) {
         </div>
       )}
 
+      <ConfirmDeleteDialog
+        open={!!deletingClientId}
+        onOpenChange={(open) => !open && setDeletingClientId(null)}
+        onConfirm={handleDeleteClient}
+        title="מחיקת לקוח"
+        description="למחיקת לקוח יימחקו גם כל אנשי הקשר, הפעילויות, ההצעות וההזמנות שלו. פעולה זו אינה ניתנת לביטול."
+        isPending={isDeleting}
+      />
       <AddClientDialog open={dialogOpen} onOpenChange={setDialogOpen} users={users} />
     </div>
   );
