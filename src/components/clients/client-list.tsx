@@ -70,8 +70,8 @@ export function ClientList({ clients, users }: ClientListProps) {
   const [lastContactFilter, setLastContactFilter] = useState<string>("ALL");
   const [pendingQuotesOnly, setPendingQuotesOnly] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [sortField, setSortField] = useState("name");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState("lastActivity");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
   const [isDeleting, startDeleteTransition] = useTransition();
 

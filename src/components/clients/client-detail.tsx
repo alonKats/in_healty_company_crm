@@ -116,6 +116,11 @@ export function ClientDetail({ client, users }: ClientDetailProps) {
     });
   }
 
+  // Derive contact info from client record, falling back to primary contact
+  const primaryContact = client.contacts.find((c) => c.isPrimary) ?? client.contacts[0];
+  const displayPhone = client.phone ?? primaryContact?.phone ?? null;
+  const displayEmail = client.email ?? primaryContact?.email ?? null;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -140,29 +145,29 @@ export function ClientDetail({ client, users }: ClientDetailProps) {
                 <p className="text-muted-foreground">{client.company}</p>
               )}
               <div className="flex flex-wrap gap-1.5 mt-1">
-                {client.phone && (
+                {displayPhone && (
                   <a
-                    href={`tel:${client.phone}`}
+                    href={`tel:${displayPhone}`}
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-teal-50 text-slate-600 hover:text-teal-700 transition-colors text-xs font-medium"
                     title="התקשר"
                   >
                     <PhoneIcon className="h-3.5 w-3.5" />
-                    {client.phone}
+                    {displayPhone}
                   </a>
                 )}
-                {client.email && (
+                {displayEmail && (
                   <a
-                    href={`mailto:${client.email}`}
+                    href={`mailto:${displayEmail}`}
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-teal-50 text-slate-600 hover:text-teal-700 transition-colors text-xs font-medium"
                     title="שלח מייל"
                   >
                     <MailIcon className="h-3.5 w-3.5" />
-                    {client.email}
+                    {displayEmail}
                   </a>
                 )}
-                {toWhatsAppLink(client.phone) && (
+                {toWhatsAppLink(displayPhone) && (
                   <a
-                    href={toWhatsAppLink(client.phone)!}
+                    href={toWhatsAppLink(displayPhone)!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 transition-colors text-xs font-medium"
