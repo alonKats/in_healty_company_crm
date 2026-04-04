@@ -32,3 +32,34 @@ export async function createActivity(clientId: string, formData: FormData) {
 
   revalidatePath(`/clients/${clientId}`);
 }
+
+export async function updateActivity(activityId: string, clientId: string, formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const type = formData.get("type") as ActivityType;
+  const direction = formData.get("direction") as ActivityDirection;
+  const dateStr = formData.get("date") as string;
+  const subject = formData.get("subject") as string | null;
+  const content = formData.get("content") as string;
+
+  await prisma.activity.update({
+    where: { id: activityId },
+    data: {
+      type,
+      direction: direction || "OUTBOUND",
+      subject: subject || null,
+      content,
+      date: new Date(dateStr),
+    },
+  });
+
+  revalidatePath(`/clients/${clientId}`);
+}
+
+export async function deleteActivity(activityId: string, clientId: string) {
+  await prisma.activity.delete({ where: { id: activityId } });
+  revalidatePath(`/clients/${clientId}`);
+}

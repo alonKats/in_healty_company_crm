@@ -217,7 +217,7 @@ export function ClientDetail({ client, users }: ClientDetailProps) {
         </TabsList>
 
         <TabsContent value="activities" className="mt-4">
-          <ActivityFeed activities={client.activities} />
+          <ActivityFeed activities={client.activities} clientId={client.id} />
         </TabsContent>
 
         <TabsContent value="quotes" className="mt-4">
