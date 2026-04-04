@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -14,9 +14,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Trash2Icon } from "lucide-react";
+import { Trash2Icon, PencilIcon } from "lucide-react";
 import { updateOrderStatus, deletePayment } from "@/lib/actions/order-actions";
 import { AddPaymentDialog } from "./add-payment-dialog";
+import { EditPaymentDialog } from "./edit-payment-dialog";
 import type { Order, OrderItem, Client, Quote, Payment, Service } from "@/generated/prisma";
 
 interface OrderItemWithService extends OrderItem {
@@ -79,6 +80,7 @@ function formatDate(date: Date | null | undefined): string {
 
 export function OrderDetail({ order }: OrderDetailProps) {
   const [isPending, startTransition] = useTransition();
+  const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
 
   function handleStatusUpdate(status: "IN_PROGRESS" | "COMPLETED" | "CANCELLED") {
     startTransition(async () => {
@@ -257,14 +259,23 @@ export function OrderDetail({ order }: OrderDetailProps) {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <button
-                        onClick={() => handleDeletePayment(payment.id)}
-                        disabled={isPending}
-                        className="text-muted-foreground hover:text-destructive transition-colors"
-                        aria-label="מחק תשלום"
-                      >
-                        <Trash2Icon className="h-4 w-4" />
-                      </button>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => setEditingPayment(payment)}
+                          className="text-muted-foreground hover:text-teal-600 transition-colors"
+                          aria-label="ערוך תשלום"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeletePayment(payment.id)}
+                          disabled={isPending}
+                          className="text-muted-foreground hover:text-destructive transition-colors"
+                          aria-label="מחק תשלום"
+                        >
+                          <Trash2Icon className="h-4 w-4" />
+                        </button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -292,6 +303,15 @@ export function OrderDetail({ order }: OrderDetailProps) {
             <p className="text-sm text-muted-foreground whitespace-pre-wrap">{order.notes}</p>
           </CardContent>
         </Card>
+      )}
+
+      {editingPayment && (
+        <EditPaymentDialog
+          payment={editingPayment}
+          orderId={order.id}
+          open={editingPayment !== null}
+          onOpenChange={(open) => { if (!open) setEditingPayment(null); }}
+        />
       )}
     </div>
   );

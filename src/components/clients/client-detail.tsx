@@ -303,6 +303,12 @@ export function ClientDetail({ client, users }: ClientDetailProps) {
                         <span className="text-sm font-medium">
                           ₪{Number(order.totalAmount).toLocaleString()}
                         </span>
+                        <Link
+                          href={`/orders/${order.id}`}
+                          className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-teal-600 transition-colors"
+                        >
+                          <PencilIcon className="h-3.5 w-3.5" />
+                        </Link>
                       </div>
                     </div>
                   </CardContent>

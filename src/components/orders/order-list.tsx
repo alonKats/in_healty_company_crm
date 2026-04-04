@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { SortableHeader } from "@/components/ui/sortable-header";
+import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
+import { deleteOrder } from "@/lib/actions/order-actions";
 import type { Order, Client, Payment } from "@/generated/prisma";
 
 interface OrderWithRelations extends Order {
@@ -58,6 +60,16 @@ function getPaymentColor(payments: Pick<Payment, "id" | "status">[]): string {
 export function OrderList({ orders }: OrderListProps) {
   const [sortField, setSortField] = useState("createdAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
+  const [isDeleting, startDeleteTransition] = useTransition();
+
+  function handleDeleteOrder() {
+    if (!deletingOrderId) return;
+    startDeleteTransition(async () => {
+      await deleteOrder(deletingOrderId);
+      setDeletingOrderId(null);
+    });
+  }
 
   function handleSort(field: string) {
     if (field === sortField) {
@@ -128,6 +140,7 @@ export function OrderList({ orders }: OrderListProps) {
                     <SortableHeader label="סכום" field="totalAmount" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
                   </th>
                   <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">תשלום</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">פעולות</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -166,6 +179,26 @@ export function OrderList({ orders }: OrderListProps) {
                         {getPaymentStatus(order.payments)}
                       </span>
                     </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Link
+                          href={`/orders/${order.id}`}
+                          className="p-1 rounded text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+                          aria-label="ערוך הזמנה"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </Link>
+                        {order.payments.length === 0 && (
+                          <button
+                            onClick={() => setDeletingOrderId(order.id)}
+                            className="p-1 rounded text-slate-400 hover:text-destructive hover:bg-red-50 transition-colors"
+                            aria-label="מחק הזמנה"
+                          >
+                            <Trash2Icon className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -178,6 +211,15 @@ export function OrderList({ orders }: OrderListProps) {
           </div>
         </div>
       )}
+
+      <ConfirmDeleteDialog
+        open={deletingOrderId !== null}
+        onOpenChange={(open) => { if (!open) setDeletingOrderId(null); }}
+        onConfirm={handleDeleteOrder}
+        title="מחיקת הזמנה"
+        description="האם למחוק את ההזמנה? פעולה זו אינה ניתנת לביטול."
+        isPending={isDeleting}
+      />
     </div>
   );
 }

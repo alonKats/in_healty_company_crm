@@ -95,3 +95,41 @@ export async function deletePayment(paymentId: string, orderId: string) {
 
   revalidatePath(`/orders/${orderId}`);
 }
+
+export async function deleteOrder(orderId: string) {
+  const order = await prisma.order.findUniqueOrThrow({
+    where: { id: orderId },
+    select: { payments: { select: { id: true } } },
+  });
+
+  if (order.payments.length > 0) {
+    throw new Error("לא ניתן למחוק הזמנה עם תשלומים רשומים");
+  }
+
+  await prisma.order.delete({ where: { id: orderId } });
+  revalidatePath("/orders");
+  redirect("/orders");
+}
+
+export async function updatePayment(paymentId: string, orderId: string, formData: FormData) {
+  const amount = Number(formData.get("amount"));
+  const method = formData.get("method") as string;
+  const date = formData.get("date") as string;
+  const invoiceNumber = formData.get("invoiceNumber") as string | null;
+  const status = formData.get("status") as string;
+  const notes = formData.get("notes") as string | null;
+
+  await prisma.payment.update({
+    where: { id: paymentId },
+    data: {
+      amount,
+      method: (method as "CASH" | "TRANSFER" | "CREDIT_CARD" | "CHECK") ?? "TRANSFER",
+      date: new Date(date),
+      invoiceNumber: invoiceNumber || null,
+      status: (status as "PENDING" | "PAID" | "PARTIAL") ?? "PENDING",
+      notes: notes || null,
+    },
+  });
+
+  revalidatePath(`/orders/${orderId}`);
+}
