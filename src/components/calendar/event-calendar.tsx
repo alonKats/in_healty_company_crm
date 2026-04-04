@@ -143,7 +143,7 @@ export function EventCalendar({ events, eventCounts }: EventCalendarProps) {
           className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
           aria-label="חודש הבא"
         >
-          <ChevronLeft className="h-5 w-5 text-slate-600" />
+          <ChevronRight className="h-5 w-5 text-slate-600" />
         </button>
         <h2 className="text-xl font-bold text-slate-800">
           {hebrewMonths[month]} {year}
@@ -153,7 +153,7 @@ export function EventCalendar({ events, eventCounts }: EventCalendarProps) {
           className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
           aria-label="חודש קודם"
         >
-          <ChevronRight className="h-5 w-5 text-slate-600" />
+          <ChevronLeft className="h-5 w-5 text-slate-600" />
         </button>
       </div>
 

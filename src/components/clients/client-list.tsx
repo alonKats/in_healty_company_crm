@@ -61,7 +61,23 @@ function getInitials(name: string) {
 
 function daysSince(date: Date | string): number {
   const d = typeof date === "string" ? new Date(date) : date;
-  return Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
+  return Math.max(0, Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24)));
+}
+
+function formatDaysAgo(days: number): string {
+  if (days === 0) return "היום";
+  if (days === 1) return "אתמול";
+  if (days <= 30) return `לפני ${days} ימים`;
+  if (days <= 60) return "לפני חודש";
+  if (days <= 90) return "לפני חודשיים";
+  if (days < 365) {
+    const months = Math.floor(days / 30);
+    return `לפני ${months} חודשים`;
+  }
+  const years = Math.floor(days / 365);
+  const remainingMonths = Math.floor((days % 365) / 30);
+  if (remainingMonths === 0) return years === 1 ? "לפני שנה" : `לפני ${years} שנים`;
+  return years === 1 ? `לפני שנה ו-${remainingMonths} חודשים` : `לפני ${years} שנים ו-${remainingMonths} חודשים`;
 }
 
 export function ClientList({ clients, users }: ClientListProps) {
@@ -290,7 +306,7 @@ export function ClientList({ clients, users }: ClientListProps) {
                           <span className="text-sm text-slate-400">אין</span>
                         ) : (
                           <span className={cn("text-sm", isStale ? "text-red-500 font-medium" : "text-slate-600")}>
-                            לפני {days} ימים
+                            {formatDaysAgo(days)}
                           </span>
                         )}
                       </td>

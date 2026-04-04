@@ -58,8 +58,9 @@ function getPaymentColor(payments: Pick<Payment, "id" | "status">[]): string {
 }
 
 export function OrderList({ orders }: OrderListProps) {
-  const [sortField, setSortField] = useState("createdAt");
+  const [sortField, setSortField] = useState("eventDate");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
   const [isDeleting, startDeleteTransition] = useTransition();
 
@@ -80,7 +81,9 @@ export function OrderList({ orders }: OrderListProps) {
     }
   }
 
-  const sorted = Array.from(orders).sort((a, b) => {
+  const filtered = statusFilter === "ALL" ? orders : orders.filter((o) => o.status === statusFilter);
+
+  const sorted = Array.from(filtered).sort((a, b) => {
     let cmp = 0;
     if (sortField === "orderNumber") {
       cmp = a.orderNumber - b.orderNumber;
@@ -115,7 +118,31 @@ export function OrderList({ orders }: OrderListProps) {
         </Link>
       </div>
 
-      {orders.length === 0 ? (
+      {/* Status Filter Bar */}
+      <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-200 flex items-center justify-around max-w-lg">
+        {[
+          { value: "ALL", label: "הכל" },
+          { value: "CONFIRMED", label: "מאושרת" },
+          { value: "IN_PROGRESS", label: "בביצוע" },
+          { value: "COMPLETED", label: "הושלמה" },
+          { value: "CANCELLED", label: "בוטלה" },
+        ].map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => setStatusFilter(opt.value)}
+            className={cn(
+              "px-3 py-1.5 text-xs font-medium rounded-lg transition-colors",
+              statusFilter === opt.value
+                ? "bg-teal-50 text-teal-700 font-bold"
+                : "text-slate-500 hover:bg-slate-50"
+            )}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-xl border border-slate-200 shadow-sm">
           <p className="text-slate-400 text-sm">אין הזמנות</p>
         </div>
@@ -206,7 +233,7 @@ export function OrderList({ orders }: OrderListProps) {
           </div>
           <div className="px-6 py-4 bg-slate-50/30 border-t border-slate-100">
             <div className="text-sm text-slate-500">
-              סה&quot;כ <span className="font-bold text-slate-700">{orders.length}</span> הזמנות
+              מציג <span className="font-bold text-slate-700">{sorted.length}</span> מתוך <span className="font-bold text-slate-700">{orders.length}</span> הזמנות
             </div>
           </div>
         </div>

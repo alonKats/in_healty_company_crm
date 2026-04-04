@@ -4,7 +4,6 @@ export async function getCalendarEvents(start: Date, end: Date) {
   return prisma.order.findMany({
     where: {
       eventDate: { gte: start, lte: end },
-      status: { not: "CANCELLED" },
     },
     include: {
       client: { select: { name: true, company: true } },
@@ -21,7 +20,6 @@ export async function getEventCountByDay(start: Date, end: Date) {
   const orders = await prisma.order.findMany({
     where: {
       eventDate: { gte: start, lte: end },
-      status: { not: "CANCELLED" },
     },
     select: { eventDate: true },
   });
