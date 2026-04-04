@@ -72,6 +72,20 @@ export async function updateQuoteStatus(id: string, status: QuoteStatus) {
   revalidatePath("/quotes");
 }
 
+export async function deleteQuote(quoteId: string) {
+  const quote = await prisma.quote.findUniqueOrThrow({
+    where: { id: quoteId },
+    select: { status: true },
+  });
+
+  if (quote.status !== "DRAFT") {
+    throw new Error("ניתן למחוק רק הצעות בסטטוס טיוטה");
+  }
+
+  await prisma.quote.delete({ where: { id: quoteId } });
+  revalidatePath("/quotes");
+}
+
 export async function createOrderFromQuote(quoteId: string) {
   const quote = await prisma.quote.findUniqueOrThrow({
     where: { id: quoteId },

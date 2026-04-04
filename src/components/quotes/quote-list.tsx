@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { SortableHeader } from "@/components/ui/sortable-header";
+import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
+import { deleteQuote } from "@/lib/actions/quote-actions";
 import type { Quote, Client, User } from "@/generated/prisma";
 
 interface QuoteWithRelations extends Quote {
@@ -41,6 +43,16 @@ function formatDate(date: Date | null | undefined): string {
 export function QuoteList({ quotes }: QuoteListProps) {
   const [sortField, setSortField] = useState("createdAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [deletingQuoteId, setDeletingQuoteId] = useState<string | null>(null);
+  const [isDeleting, startDeleteTransition] = useTransition();
+
+  function handleDeleteQuote() {
+    if (!deletingQuoteId) return;
+    startDeleteTransition(async () => {
+      await deleteQuote(deletingQuoteId);
+      setDeletingQuoteId(null);
+    });
+  }
 
   function handleSort(field: string) {
     if (field === sortField) {
@@ -107,6 +119,7 @@ export function QuoteList({ quotes }: QuoteListProps) {
                   <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <SortableHeader label="סטטוס" field="status" currentField={sortField} currentDir={sortDir} onSort={handleSort} />
                   </th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-20">פעולות</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -139,6 +152,26 @@ export function QuoteList({ quotes }: QuoteListProps) {
                         {statusLabels[quote.status] ?? quote.status}
                       </span>
                     </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Link
+                          href={`/quotes/${quote.id}`}
+                          className="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-teal-600 transition-colors"
+                          title="ערוך"
+                        >
+                          <PencilIcon className="h-3.5 w-3.5" />
+                        </Link>
+                        {quote.status === "DRAFT" && (
+                          <button
+                            onClick={() => setDeletingQuoteId(quote.id)}
+                            className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors"
+                            title="מחק"
+                          >
+                            <Trash2Icon className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -151,6 +184,15 @@ export function QuoteList({ quotes }: QuoteListProps) {
           </div>
         </div>
       )}
+
+      <ConfirmDeleteDialog
+        open={!!deletingQuoteId}
+        onOpenChange={(open) => !open && setDeletingQuoteId(null)}
+        onConfirm={handleDeleteQuote}
+        title="מחיקת הצעת מחיר"
+        description="האם למחוק את ההצעה? פעולה זו אינה ניתנת לביטול."
+        isPending={isDeleting}
+      />
     </div>
   );
 }
