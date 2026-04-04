@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getServiceById, getCategories } from "@/lib/queries/service-queries";
 import { ServiceForm } from "@/components/services/service-form";
+import { DeleteServiceButton } from "@/components/services/delete-service-button";
 import { updateService, deleteService } from "@/lib/actions/service-actions";
 import { serialize } from "@/lib/utils";
 
@@ -34,15 +35,7 @@ export default async function EditServicePage({ params }: Props) {
           await deleteService(id);
         }}
       >
-        <button
-          type="submit"
-          className="text-sm text-destructive hover:underline"
-          onClick={(e) => {
-            if (!confirm("האם למחוק את המוצר?")) e.preventDefault();
-          }}
-        >
-          מחק מוצר
-        </button>
+        <DeleteServiceButton />
       </form>
     </div>
   );
