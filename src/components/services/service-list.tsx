@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { PlusIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,6 +25,8 @@ function getMargin(basePrice: number, totalCost: number): number | null {
 }
 
 export function ServiceList({ services }: ServiceListProps) {
+  const [sourceFilter, setSourceFilter] = useState<string>("ALL");
+
   if (services.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -36,8 +39,11 @@ export function ServiceList({ services }: ServiceListProps) {
     );
   }
 
+  // Filter by source type
+  const filteredServices = sourceFilter === "ALL" ? services : services.filter((s) => s.sourceType === sourceFilter);
+
   // Group by category
-  const grouped = services.reduce<Record<string, ServiceWithRelations[]>>((acc, service) => {
+  const grouped = filteredServices.reduce<Record<string, ServiceWithRelations[]>>((acc, service) => {
     const categoryName = service.category.name;
     if (!acc[categoryName]) acc[categoryName] = [];
     acc[categoryName].push(service);
@@ -60,7 +66,33 @@ export function ServiceList({ services }: ServiceListProps) {
         </Link>
       </div>
 
-      {Object.entries(grouped).map(([categoryName, categoryServices]) => (
+      <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-200 flex items-center justify-around max-w-md">
+        {[
+          { value: "ALL", label: "הכל" },
+          { value: "IN_HOUSE", label: "מוצרי בית" },
+          { value: "EXTERNAL_SUPPLIER", label: "ספקים חיצוניים" },
+        ].map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => setSourceFilter(opt.value)}
+            className={cn(
+              "px-4 py-1.5 text-xs font-medium rounded-lg transition-colors",
+              sourceFilter === opt.value
+                ? "bg-teal-50 text-teal-700 font-bold"
+                : "text-slate-500 hover:bg-slate-50"
+            )}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {filteredServices.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <p className="text-muted-foreground mb-4">אין מוצרים או שירותים במסנן זה</p>
+        </div>
+      ) : (
+        Object.entries(grouped).map(([categoryName, categoryServices]) => (
         <div key={categoryName} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">{categoryName}</h3>
@@ -128,7 +160,8 @@ export function ServiceList({ services }: ServiceListProps) {
             </table>
           </div>
         </div>
-      ))}
+        ))
+      )}
     </div>
   );
 }
