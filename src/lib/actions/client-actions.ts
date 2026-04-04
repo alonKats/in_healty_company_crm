@@ -132,3 +132,24 @@ export async function deleteContact(contactId: string, clientId: string) {
 
   revalidatePath(`/clients/${clientId}`);
 }
+
+export async function updateContact(contactId: string, clientId: string, formData: FormData) {
+  const name = formData.get("name") as string;
+  const role = formData.get("role") as string | null;
+  const phone = formData.get("phone") as string | null;
+  const email = formData.get("email") as string | null;
+  const isPrimary = formData.get("isPrimary") === "true";
+
+  await prisma.contact.update({
+    where: { id: contactId },
+    data: {
+      name,
+      role: role || null,
+      phone: phone || null,
+      email: email || null,
+      isPrimary,
+    },
+  });
+
+  revalidatePath(`/clients/${clientId}`);
+}
