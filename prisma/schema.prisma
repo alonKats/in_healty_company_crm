@@ -128,9 +128,10 @@ model Client {
   status       ClientStatus @default(LEAD)
   assignedToId String?
   assignedTo   User?        @relation("AssignedClients", fields: [assignedToId], references: [id])
-  notes        String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  notes              String?
+  isOnMailingList    Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
   contacts     Contact[]
   activities   Activity[]
   quotes       Quote[]
