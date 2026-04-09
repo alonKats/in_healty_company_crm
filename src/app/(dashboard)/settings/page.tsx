@@ -6,6 +6,7 @@ import { getCategories } from "@/lib/queries/service-queries";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserManagement } from "@/components/settings/user-management";
 import { CategoryManagement } from "@/components/settings/category-management";
+import { GreenInvoiceSettings } from "@/components/settings/green-invoice-settings";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -26,12 +27,16 @@ export default async function SettingsPage() {
         <TabsList>
           <TabsTrigger value="users">משתמשים</TabsTrigger>
           <TabsTrigger value="categories">קטגוריות</TabsTrigger>
+          <TabsTrigger value="integrations">אינטגרציות</TabsTrigger>
         </TabsList>
         <TabsContent value="users">
           <UserManagement users={serialize(users)} />
         </TabsContent>
         <TabsContent value="categories">
           <CategoryManagement categories={serialize(categories)} />
+        </TabsContent>
+        <TabsContent value="integrations">
+          <GreenInvoiceSettings />
         </TabsContent>
       </Tabs>
     </div>

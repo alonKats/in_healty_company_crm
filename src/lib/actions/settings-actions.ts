@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import type { Role } from "@/generated/prisma";
+import { testConnection } from "@/lib/services/green-invoice";
 
 // ── Users ──────────────────────────────────────────────
 
@@ -56,4 +57,20 @@ export async function updateCategory(id: string, formData: FormData) {
 export async function deleteCategory(id: string) {
   await prisma.category.delete({ where: { id } });
   revalidatePath("/settings");
+}
+
+// ── Green Invoice ───────────────────────────────────────
+
+export async function testGreenInvoiceConnection(): Promise<
+  { success: true; businessName: string } | { success: false; error: string }
+> {
+  try {
+    const result = await testConnection();
+    return {
+      success: true,
+      businessName: result.name || result.businessName || "Connected",
+    };
+  } catch (error) {
+    return { success: false, error: (error as Error).message };
+  }
 }
