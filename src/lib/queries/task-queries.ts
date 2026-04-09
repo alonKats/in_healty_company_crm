@@ -60,6 +60,17 @@ export async function getOverdueTasks() {
   });
 }
 
+export async function getAllTasks(limit = 100) {
+  return prisma.task.findMany({
+    include: {
+      client: { select: { id: true, name: true, company: true } },
+      assignedTo: { select: { id: true, name: true } },
+    },
+    orderBy: [{ createdAt: "desc" }],
+    take: limit,
+  });
+}
+
 export async function getTaskStats() {
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
