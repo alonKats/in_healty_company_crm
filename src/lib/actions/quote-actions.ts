@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import type { QuoteStatus } from "@/generated/prisma";
+import { triggerAutoTasks } from "./task-actions";
 
 interface QuoteItemInput {
   serviceId?: string;
@@ -68,6 +69,22 @@ export async function updateQuoteStatus(id: string, status: QuoteStatus) {
     data: { status },
   });
 
+  if (status === "SENT" || status === "EXPIRED") {
+    const quote = await prisma.quote.findUnique({ where: { id }, select: { clientId: true } });
+    if (quote?.clientId) {
+      try {
+        await triggerAutoTasks({
+          type: status === "SENT" ? "QUOTE_SENT" : "QUOTE_EXPIRED",
+          clientId: quote.clientId,
+          relatedId: id,
+          relatedType: "quote",
+        });
+      } catch (e) {
+        console.error("Auto-trigger failed:", e);
+      }
+    }
+  }
+
   revalidatePath(`/quotes/${id}`);
   revalidatePath("/quotes");
 }
@@ -115,6 +132,17 @@ export async function createOrderFromQuote(quoteId: string) {
       },
     },
   });
+
+  try {
+    await triggerAutoTasks({
+      type: "ORDER_CREATED",
+      clientId: quote.clientId,
+      relatedId: order.id,
+      relatedType: "order",
+    });
+  } catch (e) {
+    console.error("Auto-trigger failed:", e);
+  }
 
   redirect(`/orders/${order.id}`);
 }

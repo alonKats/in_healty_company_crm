@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import type { OrderStatus } from "@/generated/prisma";
+import { triggerAutoTasks } from "./task-actions";
 
 interface OrderItemInput {
   serviceId?: string;
@@ -54,6 +55,12 @@ export async function createOrder(formData: FormData) {
     },
   });
 
+  try {
+    await triggerAutoTasks({ type: "ORDER_CREATED", clientId, relatedId: order.id, relatedType: "order" });
+  } catch (e) {
+    console.error("Auto-trigger failed:", e);
+  }
+
   redirect(`/orders/${order.id}`);
 }
 
@@ -62,6 +69,22 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
     where: { id },
     data: { status },
   });
+
+  if (status === "COMPLETED") {
+    const order = await prisma.order.findUnique({ where: { id }, select: { clientId: true } });
+    if (order?.clientId) {
+      try {
+        await triggerAutoTasks({
+          type: "EVENT_COMPLETED",
+          clientId: order.clientId,
+          relatedId: id,
+          relatedType: "order",
+        });
+      } catch (e) {
+        console.error("Auto-trigger failed:", e);
+      }
+    }
+  }
 
   revalidatePath(`/orders/${id}`);
   revalidatePath("/orders");
