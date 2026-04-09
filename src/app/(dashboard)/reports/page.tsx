@@ -1,4 +1,4 @@
-import { getReportData } from "@/lib/queries/report-queries";
+import { getReportData, getPeriodStats, type ReportPeriod } from "@/lib/queries/report-queries";
 import {
   getRecentInvoices,
   getRecentExpenses,
@@ -8,7 +8,7 @@ import { ReportsPageClient } from "@/components/reports/reports-page-client";
 import { serialize } from "@/lib/utils";
 
 interface ReportsPageProps {
-  searchParams: Promise<{ year?: string; tab?: string }>;
+  searchParams: Promise<{ year?: string; tab?: string; period?: string }>;
 }
 
 export default async function ReportsPage({ searchParams }: ReportsPageProps) {
@@ -18,11 +18,17 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
   const availableYears = [currentYear, currentYear - 1, currentYear - 2];
   const activeTab = params.tab ?? "reports";
 
-  const [data, invoices, expenses, summary] = await Promise.all([
+  const validPeriods: ReportPeriod[] = ["daily", "weekly", "monthly", "yearly"];
+  const period: ReportPeriod = validPeriods.includes(params.period as ReportPeriod)
+    ? (params.period as ReportPeriod)
+    : "monthly";
+
+  const [data, invoices, expenses, summary, periodStats] = await Promise.all([
     getReportData(year),
     getRecentInvoices(),
     getRecentExpenses(),
     getMonthlyFinancialSummary(),
+    getPeriodStats(period),
   ]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,6 +40,8 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
       availableYears={availableYears}
       financials={{ invoices, expenses, summary }}
       activeTab={activeTab}
+      period={period}
+      periodStats={periodStats}
     />
   );
 }

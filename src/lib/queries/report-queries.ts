@@ -1,5 +1,49 @@
 import { prisma } from "@/lib/prisma";
 
+export type ReportPeriod = "daily" | "weekly" | "monthly" | "yearly";
+
+export function getPeriodStartDate(period: ReportPeriod): Date {
+  const now = new Date();
+  switch (period) {
+    case "daily": {
+      const d = new Date(now);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+    case "weekly": {
+      const d = new Date(now);
+      d.setDate(d.getDate() - d.getDay()); // Sunday
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+    case "monthly":
+      return new Date(now.getFullYear(), now.getMonth(), 1);
+    case "yearly":
+      return new Date(now.getFullYear(), 0, 1);
+  }
+}
+
+export async function getPeriodStats(period: ReportPeriod) {
+  const startDate = getPeriodStartDate(period);
+
+  const [newQuotes, confirmedOrders, revenue, completedTasks] = await Promise.all([
+    prisma.quote.count({ where: { createdAt: { gte: startDate } } }),
+    prisma.order.count({ where: { status: "CONFIRMED", createdAt: { gte: startDate } } }),
+    prisma.payment.aggregate({
+      where: { status: "PAID", date: { gte: startDate } },
+      _sum: { amount: true },
+    }),
+    prisma.task.count({ where: { status: "COMPLETED", completedAt: { gte: startDate } } }),
+  ]);
+
+  return {
+    newQuotes,
+    confirmedOrders,
+    revenue: Number(revenue._sum.amount ?? 0),
+    completedTasks,
+  };
+}
+
 export async function getReportData(year: number) {
   const startOfYear = new Date(year, 0, 1);
   const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
