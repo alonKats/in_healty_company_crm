@@ -5,6 +5,9 @@ export async function getServices() {
     include: {
       category: true,
       costItems: true,
+      packageItems: {
+        include: { service: true },
+      },
     },
     orderBy: [
       { category: { sortOrder: "asc" } },
@@ -19,6 +22,9 @@ export async function getServiceById(id: string) {
     include: {
       category: true,
       costItems: true,
+      packageItems: {
+        include: { service: true },
+      },
     },
   });
 }
@@ -39,6 +45,9 @@ export async function getActiveServices() {
     include: {
       category: true,
       costItems: true,
+      packageItems: {
+        include: { service: true },
+      },
     },
     orderBy: [
       { category: { sortOrder: "asc" } },

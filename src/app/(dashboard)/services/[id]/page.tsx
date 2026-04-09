@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getServiceById, getCategories } from "@/lib/queries/service-queries";
+import { getServiceById, getCategories, getActiveServices } from "@/lib/queries/service-queries";
 import { ServiceForm } from "@/components/services/service-form";
 import { DeleteServiceButton } from "@/components/services/delete-service-button";
 import { updateService, deleteService } from "@/lib/actions/service-actions";
@@ -11,9 +11,10 @@ interface Props {
 
 export default async function EditServicePage({ params }: Props) {
   const { id } = await params;
-  const [service, categories] = await Promise.all([
+  const [service, categories, allServices] = await Promise.all([
     getServiceById(id).then(serialize),
     getCategories().then(serialize),
+    getActiveServices().then(serialize),
   ]);
 
   if (!service) notFound();
@@ -25,6 +26,7 @@ export default async function EditServicePage({ params }: Props) {
       <ServiceForm
         categories={categories}
         service={service}
+        allServices={allServices}
         action={updateWithId}
         title="עריכת מוצר / שירות"
       />

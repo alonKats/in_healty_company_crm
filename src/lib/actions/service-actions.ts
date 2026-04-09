@@ -11,6 +11,11 @@ interface CostItemInput {
   type: CostItemType;
 }
 
+interface PackageItemInput {
+  serviceId: string;
+  quantity: number;
+}
+
 export async function createService(formData: FormData) {
   const name = formData.get("name") as string;
   const description = formData.get("description") as string | null;
@@ -18,8 +23,11 @@ export async function createService(formData: FormData) {
   const sourceType = formData.get("sourceType") as ServiceSourceType;
   const basePrice = parseFloat(formData.get("basePrice") as string);
   const costItemsJson = formData.get("costItems") as string;
+  const isPackage = formData.get("isPackage") === "true";
+  const packageItemsJson = formData.get("packageItems") as string;
 
   const costItems: CostItemInput[] = costItemsJson ? JSON.parse(costItemsJson) : [];
+  const packageItems: PackageItemInput[] = packageItemsJson ? JSON.parse(packageItemsJson) : [];
 
   await prisma.service.create({
     data: {
@@ -29,6 +37,7 @@ export async function createService(formData: FormData) {
       sourceType,
       basePrice,
       status: "ACTIVE",
+      isPackage,
       costItems: {
         create: costItems.map((item) => ({
           description: item.description,
@@ -36,6 +45,16 @@ export async function createService(formData: FormData) {
           type: item.type,
         })),
       },
+      ...(isPackage && packageItems.length > 0
+        ? {
+            packageItems: {
+              create: packageItems.map((pi) => ({
+                serviceId: pi.serviceId,
+                quantity: pi.quantity,
+              })),
+            },
+          }
+        : {}),
     },
   });
 
@@ -51,11 +70,15 @@ export async function updateService(id: string, formData: FormData) {
   const basePrice = parseFloat(formData.get("basePrice") as string);
   const status = formData.get("status") as ServiceStatus;
   const costItemsJson = formData.get("costItems") as string;
+  const isPackage = formData.get("isPackage") === "true";
+  const packageItemsJson = formData.get("packageItems") as string;
 
   const costItems: CostItemInput[] = costItemsJson ? JSON.parse(costItemsJson) : [];
+  const packageItems: PackageItemInput[] = packageItemsJson ? JSON.parse(packageItemsJson) : [];
 
   await prisma.$transaction([
     prisma.costItem.deleteMany({ where: { serviceId: id } }),
+    prisma.packageItem.deleteMany({ where: { packageId: id } }),
     prisma.service.update({
       where: { id },
       data: {
@@ -65,6 +88,7 @@ export async function updateService(id: string, formData: FormData) {
         sourceType,
         basePrice,
         status,
+        isPackage,
         costItems: {
           create: costItems.map((item) => ({
             description: item.description,
@@ -72,6 +96,16 @@ export async function updateService(id: string, formData: FormData) {
             type: item.type,
           })),
         },
+        ...(isPackage && packageItems.length > 0
+          ? {
+              packageItems: {
+                create: packageItems.map((pi) => ({
+                  serviceId: pi.serviceId,
+                  quantity: pi.quantity,
+                })),
+              },
+            }
+          : {}),
       },
     }),
   ]);

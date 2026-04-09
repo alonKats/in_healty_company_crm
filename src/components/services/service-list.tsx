@@ -4,11 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { PlusIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Category, CostItem, Service } from "@/generated/prisma";
+import type { Category, CostItem, PackageItem, Service } from "@/generated/prisma";
+
+interface PackageItemWithService extends PackageItem {
+  service: Service;
+}
 
 interface ServiceWithRelations extends Service {
   category: Category;
   costItems: CostItem[];
+  packageItems: PackageItemWithService[];
 }
 
 interface ServiceListProps {
@@ -118,9 +123,16 @@ export function ServiceList({ services }: ServiceListProps) {
                   return (
                     <tr key={service.id} className="hover:bg-teal-50/30 transition-colors">
                       <td className="px-6 py-4">
-                        <Link href={`/services/${service.id}`} className="font-bold text-slate-800 hover:text-teal-600 transition-colors">
-                          {service.name}
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <Link href={`/services/${service.id}`} className="font-bold text-slate-800 hover:text-teal-600 transition-colors">
+                            {service.name}
+                          </Link>
+                          {service.isPackage && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-100 text-violet-700 shrink-0">
+                              חבילה
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600">
                         {service.sourceType === "IN_HOUSE" ? "מוצר בית" : "ספק חיצוני"}

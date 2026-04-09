@@ -164,20 +164,34 @@ model Category {
 }
 
 model Service {
-  id          String            @id @default(uuid())
-  name        String
-  description String?
-  categoryId  String
-  category    Category          @relation(fields: [categoryId], references: [id])
-  sourceType  ServiceSourceType @default(IN_HOUSE)
-  basePrice   Decimal
-  status      ServiceStatus     @default(ACTIVE)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  costItems   CostItem[]
-  quoteItems  QuoteItem[]
-  orderItems  OrderItem[]
-  providers   ProviderService[]
+  id           String            @id @default(uuid())
+  name         String
+  description  String?
+  categoryId   String
+  category     Category          @relation(fields: [categoryId], references: [id])
+  sourceType   ServiceSourceType @default(IN_HOUSE)
+  basePrice    Decimal
+  status       ServiceStatus     @default(ACTIVE)
+  isPackage    Boolean           @default(false)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  costItems    CostItem[]
+  quoteItems   QuoteItem[]
+  orderItems   OrderItem[]
+  providers    ProviderService[]
+  packageItems PackageItem[]     @relation("PackageParent")
+  includedIn   PackageItem[]     @relation("PackageChild")
+}
+
+model PackageItem {
+  id        String  @id @default(uuid())
+  packageId String
+  serviceId String
+  quantity  Int     @default(1)
+  package   Service @relation("PackageParent", fields: [packageId], references: [id], onDelete: Cascade)
+  service   Service @relation("PackageChild", fields: [serviceId], references: [id])
+
+  @@unique([packageId, serviceId])
 }
 
 model CostItem {
