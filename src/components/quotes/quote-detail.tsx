@@ -26,6 +26,8 @@ interface QuoteWithRelations extends Quote {
   assignedTo: Pick<User, "id" | "name"> | null;
   items: QuoteItemWithService[];
   orders: Pick<Order, "id" | "orderNumber" | "status">[];
+  version: number;
+  paymentTerms: string | null;
 }
 
 interface QuoteDetailProps {
@@ -104,11 +106,22 @@ export function QuoteDetail({ quote }: QuoteDetailProps) {
                 {quote.eventDate && <p>תאריך אירוע: {formatDate(quote.eventDate)}</p>}
                 {quote.validUntil && <p>תוקף עד: {formatDate(quote.validUntil)}</p>}
                 {quote.assignedTo && <p>אחראי: {quote.assignedTo.name}</p>}
+                {quote.version > 1 && <p>גרסה: {quote.version}</p>}
+                {quote.paymentTerms && <p>תנאי תשלום: {quote.paymentTerms}</p>}
               </div>
             </div>
 
             {/* Actions */}
             <div className="flex flex-wrap gap-2">
+              {(quote.status === "DRAFT" || quote.status === "SENT") && (
+                <Link
+                  href={`/quotes/${quote.id}/edit`}
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+                >
+                  עריכה
+                </Link>
+              )}
+
               {quote.status === "DRAFT" && (
                 <button
                   onClick={() => handleStatusUpdate("SENT")}

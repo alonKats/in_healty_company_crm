@@ -93,12 +93,35 @@ interface ServiceWithRelations extends Service {
   costItems: CostItem[];
 }
 
+interface InitialQuoteData {
+  id: string;
+  clientId: string;
+  assignedToId: string | null;
+  source: string;
+  eventDate: string | null;
+  validUntil: string | null;
+  notes: string | null;
+  terms: string | null;
+  paymentTerms: string | null;
+  items: {
+    serviceId: string | null;
+    category: string | null;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    costPerUnit: number | null;
+    notes: string | null;
+    sortOrder: number;
+  }[];
+}
+
 interface QuoteFormProps {
   clients: Pick<Client, "id" | "name" | "company">[];
   users: Pick<User, "id" | "name">[];
   services: ServiceWithRelations[];
   defaultClientId?: string;
   action: (formData: FormData) => Promise<void>;
+  initialData?: InitialQuoteData;
 }
 
 interface LineItem {
@@ -133,11 +156,28 @@ export function QuoteForm({
   services,
   defaultClientId,
   action,
+  initialData,
 }: QuoteFormProps) {
-  const [clientId, setClientId] = useState(defaultClientId ?? "");
-  const [assignedToId, setAssignedToId] = useState("");
-  const [source, setSource] = useState("OUTBOUND");
-  const [lineItems, setLineItems] = useState<LineItem[]>([emptyItem(0)]);
+  const isEditing = !!initialData;
+  const [clientId, setClientId] = useState(initialData?.clientId ?? defaultClientId ?? "");
+  const [assignedToId, setAssignedToId] = useState(initialData?.assignedToId ?? "");
+  const [source, setSource] = useState(initialData?.source ?? "OUTBOUND");
+  const [paymentTerms, setPaymentTerms] = useState(initialData?.paymentTerms ?? "");
+  const [lineItems, setLineItems] = useState<LineItem[]>(
+    initialData?.items?.length
+      ? initialData.items.map((item, i) => ({
+          id: crypto.randomUUID(),
+          serviceId: item.serviceId ?? "",
+          category: item.category ?? "",
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          costPerUnit: item.costPerUnit,
+          notes: item.notes ?? "",
+          sortOrder: item.sortOrder ?? i,
+        }))
+      : [emptyItem(0)]
+  );
 
   function addItem() {
     setLineItems((prev) => [...prev, emptyItem(prev.length)]);
@@ -185,6 +225,7 @@ export function QuoteForm({
     formData.set("clientId", clientId);
     formData.set("assignedToId", assignedToId);
     formData.set("source", source);
+    formData.set("paymentTerms", paymentTerms);
     formData.set(
       "items",
       JSON.stringify(
@@ -199,15 +240,19 @@ export function QuoteForm({
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">הצעת מחיר חדשה</h1>
-          <p className="text-slate-500 text-sm mt-1">יצירת הצעת מחיר חדשה עבור לקוחות החברה</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+            {isEditing ? "עריכת הצעת מחיר" : "הצעת מחיר חדשה"}
+          </h1>
+          <p className="text-slate-500 text-sm mt-1">
+            {isEditing ? "עדכון פרטי הצעת המחיר" : "יצירת הצעת מחיר חדשה עבור לקוחות החברה"}
+          </p>
         </div>
         <div className="flex gap-3">
           <Button type="button" variant="outline" onClick={() => history.back()} className="border-slate-300 text-slate-600 rounded-lg hover:bg-slate-100 font-medium">
             ביטול
           </Button>
           <Button type="submit" disabled={lineItems.length === 0 || !clientId} className="bg-teal-600 text-white rounded-lg hover:bg-teal-700 shadow-lg shadow-teal-600/20 font-bold px-8">
-            שמירת הצעה
+            {isEditing ? "עדכון הצעה" : "שמירת הצעה"}
           </Button>
         </div>
       </div>
@@ -215,7 +260,9 @@ export function QuoteForm({
       {/* Quote Details Card */}
       <Card className="bg-white rounded-xl border border-slate-200 shadow-sm">
         <CardHeader className="border-b border-slate-100 pb-4">
-          <CardTitle className="text-teal-600 flex items-center gap-2 text-lg">הצעת מחיר חדשה</CardTitle>
+          <CardTitle className="text-teal-600 flex items-center gap-2 text-lg">
+            {isEditing ? "עריכת הצעת מחיר" : "הצעת מחיר חדשה"}
+          </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2 pt-6">
           {/* Client */}
@@ -265,13 +312,13 @@ export function QuoteForm({
           {/* Event date */}
           <div className="space-y-1.5">
             <Label htmlFor="eventDate">תאריך אירוע</Label>
-            <Input id="eventDate" name="eventDate" type="date" />
+            <Input id="eventDate" name="eventDate" type="date" defaultValue={initialData?.eventDate ? initialData.eventDate.slice(0, 10) : ""} />
           </div>
 
           {/* Valid until */}
           <div className="space-y-1.5">
             <Label htmlFor="validUntil">תוקף הצעה עד</Label>
-            <Input id="validUntil" name="validUntil" type="date" />
+            <Input id="validUntil" name="validUntil" type="date" defaultValue={initialData?.validUntil ? initialData.validUntil.slice(0, 10) : ""} />
           </div>
         </CardContent>
       </Card>
@@ -416,12 +463,29 @@ export function QuoteForm({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-1.5">
+            <Label htmlFor="paymentTerms">תנאי תשלום</Label>
+            <Input
+              id="paymentTerms"
+              list="payment-terms-options"
+              value={paymentTerms}
+              onChange={(e) => setPaymentTerms(e.target.value)}
+              placeholder="בחר או הקלד תנאי תשלום"
+            />
+            <datalist id="payment-terms-options">
+              <option value="מזומן" />
+              <option value="שוטף + 30" />
+              <option value="שוטף + 60" />
+              <option value="שוטף + 90" />
+            </datalist>
+          </div>
+          <div className="space-y-1.5">
             <Label htmlFor="notes">הערות</Label>
             <Textarea
               id="notes"
               name="notes"
               rows={3}
               placeholder="הערות להצעה"
+              defaultValue={initialData?.notes ?? ""}
             />
           </div>
           <div className="space-y-1.5">
@@ -431,6 +495,7 @@ export function QuoteForm({
               name="terms"
               rows={3}
               placeholder="תנאי תשלום ומסירה"
+              defaultValue={initialData?.terms ?? ""}
             />
           </div>
         </CardContent>

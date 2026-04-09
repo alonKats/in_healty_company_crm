@@ -203,6 +203,8 @@ model Quote {
   assignedTo   User?       @relation("AssignedQuotes", fields: [assignedToId], references: [id])
   notes        String?
   terms        String?
+  paymentTerms String?
+  version      Int         @default(1)
   pdfUrl       String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
@@ -329,19 +331,24 @@ enum FeeType {
 }
 
 model Provider {
-  id          String   @id @default(uuid())
-  name        String
-  phone       String?
-  email       String?
-  specialty   String?
-  notes       String?
-  feeType     FeeType  @default(PER_EVENT)
-  defaultFee  Decimal?
-  rating      Int?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  services    ProviderService[]
+  id               String   @id @default(uuid())
+  name             String
+  phone            String?
+  email            String?
+  specialty        String?
+  notes            String?
+  feeType          FeeType  @default(PER_EVENT)
+  defaultFee       Decimal?
+  rating           Int?
+  isActive         Boolean  @default(true)
+  paymentTerms     String?
+  bankDetails      String?
+  taxId            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  services         ProviderService[]
+  purchaseOrders   PurchaseOrder[]
+  supplierInvoices SupplierInvoice[]
 }
 
 model ProviderService {
@@ -407,4 +414,37 @@ model Task {
   @@index([status, dueDate])
   @@index([clientId])
   @@index([assignedToId])
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  SENT
+  CONFIRMED
+  CANCELLED
+}
+
+model PurchaseOrder {
+  id          String              @id @default(uuid())
+  providerId  String
+  orderNumber String              @unique @default(cuid())
+  items       Json                @default("[]")
+  totalAmount Decimal             @default(0)
+  status      PurchaseOrderStatus @default(DRAFT)
+  notes       String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  provider    Provider            @relation(fields: [providerId], references: [id])
+}
+
+model SupplierInvoice {
+  id            String        @id @default(uuid())
+  providerId    String
+  invoiceNumber String
+  amount        Decimal       @default(0)
+  date          DateTime
+  description   String?
+  status        PaymentStatus @default(PENDING)
+  notes         String?
+  createdAt     DateTime      @default(now())
+  provider      Provider      @relation(fields: [providerId], references: [id])
 }

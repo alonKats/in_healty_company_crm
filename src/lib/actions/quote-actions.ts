@@ -25,6 +25,7 @@ export async function createQuote(formData: FormData) {
   const validUntil = formData.get("validUntil") as string | null;
   const notes = formData.get("notes") as string | null;
   const terms = formData.get("terms") as string | null;
+  const paymentTerms = formData.get("paymentTerms") as string | null;
   const itemsJson = formData.get("items") as string;
 
   const items: QuoteItemInput[] = itemsJson ? JSON.parse(itemsJson) : [];
@@ -43,6 +44,7 @@ export async function createQuote(formData: FormData) {
       validUntil: validUntil ? new Date(validUntil) : null,
       notes: notes || null,
       terms: terms || null,
+      paymentTerms: paymentTerms || null,
       totalAmount,
       items: {
         create: items.map((item) => ({
@@ -61,6 +63,64 @@ export async function createQuote(formData: FormData) {
   });
 
   redirect(`/quotes/${quote.id}`);
+}
+
+export async function updateQuote(id: string, formData: FormData) {
+  const clientId = formData.get("clientId") as string;
+  const assignedToId = formData.get("assignedToId") as string | null;
+  const source = formData.get("source") as string;
+  const eventDate = formData.get("eventDate") as string | null;
+  const validUntil = formData.get("validUntil") as string | null;
+  const notes = formData.get("notes") as string | null;
+  const terms = formData.get("terms") as string | null;
+  const paymentTerms = formData.get("paymentTerms") as string | null;
+  const itemsJson = formData.get("items") as string;
+
+  const items: QuoteItemInput[] = itemsJson ? JSON.parse(itemsJson) : [];
+
+  const totalAmount = items.reduce(
+    (sum, item) => sum + item.quantity * item.unitPrice,
+    0
+  );
+
+  await prisma.$transaction(async (tx) => {
+    // Delete old items
+    await tx.quoteItem.deleteMany({ where: { quoteId: id } });
+
+    // Update quote and create new items, increment version
+    await tx.quote.update({
+      where: { id },
+      data: {
+        clientId,
+        assignedToId: assignedToId || null,
+        source: (source as "OUTBOUND" | "INBOUND" | "REFERRAL") ?? "OUTBOUND",
+        eventDate: eventDate ? new Date(eventDate) : null,
+        validUntil: validUntil ? new Date(validUntil) : null,
+        notes: notes || null,
+        terms: terms || null,
+        paymentTerms: paymentTerms || null,
+        totalAmount,
+        version: { increment: 1 },
+        items: {
+          create: items.map((item) => ({
+            serviceId: item.serviceId || null,
+            category: item.category || null,
+            description: item.description,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            costPerUnit: item.costPerUnit ?? null,
+            total: item.quantity * item.unitPrice,
+            notes: item.notes || null,
+            sortOrder: item.sortOrder,
+          })),
+        },
+      },
+    });
+  });
+
+  revalidatePath(`/quotes/${id}`);
+  revalidatePath("/quotes");
+  redirect(`/quotes/${id}`);
 }
 
 export async function updateQuoteStatus(id: string, status: QuoteStatus) {

@@ -13,11 +13,11 @@ Font.register({
   family: "Rubik",
   fonts: [
     {
-      src: "https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4iFV0U1.ttf",
+      src: "https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4iFV0U1dYPFkZVO.ttf",
       fontWeight: 400,
     },
     {
-      src: "https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-NYiFV0U1.ttf",
+      src: "https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4iFWUUdYPFkZVO.ttf",
       fontWeight: 700,
     },
   ],
@@ -26,6 +26,8 @@ Font.register({
 type QuoteWithItems = Quote & {
   client: Client;
   items: QuoteItem[];
+  paymentTerms?: string | null;
+  version?: number;
 };
 
 const styles = StyleSheet.create({
@@ -247,6 +249,7 @@ export function QuotePdfDocument({ quote }: { quote: QuoteWithItems }) {
         <View style={styles.quoteMeta}>
           <Text style={styles.quoteMetaTitle}>
             הצעת מחיר מספר #{quote.quoteNumber}
+            {quote.version && quote.version > 1 ? ` (גרסה ${quote.version})` : ""}
           </Text>
           <View style={styles.metaRow}>
             <Text style={styles.metaLabel}>תאריך:</Text>
@@ -369,6 +372,14 @@ export function QuotePdfDocument({ quote }: { quote: QuoteWithItems }) {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>תנאים</Text>
             <Text style={styles.sectionBody}>{quote.terms}</Text>
+          </View>
+        )}
+
+        {/* Payment Terms */}
+        {quote.paymentTerms && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>תנאי תשלום</Text>
+            <Text style={styles.sectionBody}>{quote.paymentTerms}</Text>
           </View>
         )}
 
