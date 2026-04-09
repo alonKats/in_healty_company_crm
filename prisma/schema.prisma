@@ -131,6 +131,7 @@ model Client {
   assignedTo   User?        @relation("AssignedClients", fields: [assignedToId], references: [id])
   notes              String?
   isOnMailingList    Boolean  @default(false)
+  greenInvoiceId     String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   contacts     Contact[]
@@ -238,6 +239,8 @@ model Order {
   eventLocation String?
   totalAmount   Decimal     @default(0)
   notes         String?
+  invoiceId     String?
+  invoiceUrl    String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   items         OrderItem[]
