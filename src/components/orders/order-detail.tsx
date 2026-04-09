@@ -18,6 +18,7 @@ import { Trash2Icon, PencilIcon } from "lucide-react";
 import { updateOrderStatus, deletePayment } from "@/lib/actions/order-actions";
 import { AddPaymentDialog } from "./add-payment-dialog";
 import { EditPaymentDialog } from "./edit-payment-dialog";
+import { CreateInvoiceButton } from "./create-invoice-button";
 import type { Order, OrderItem, Client, Quote, Payment, Service } from "@/generated/prisma";
 
 interface OrderItemWithService extends OrderItem {
@@ -140,8 +141,8 @@ export function OrderDetail({ order }: OrderDetailProps) {
               </div>
             </div>
 
-            {/* Status actions */}
-            <div className="flex flex-wrap gap-2">
+            {/* Status actions + Invoice */}
+            <div className="flex flex-wrap gap-2 items-center">
               {order.status === "CONFIRMED" && (
                 <button
                   onClick={() => handleStatusUpdate("IN_PROGRESS")}
@@ -169,6 +170,11 @@ export function OrderDetail({ order }: OrderDetailProps) {
                   בטל
                 </button>
               )}
+              <CreateInvoiceButton
+                orderId={order.id}
+                invoiceId={order.invoiceId}
+                invoiceUrl={order.invoiceUrl}
+              />
             </div>
           </div>
         </CardContent>
