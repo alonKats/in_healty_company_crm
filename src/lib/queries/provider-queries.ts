@@ -18,6 +18,12 @@ export async function getProviderById(id: string) {
       services: {
         include: { service: { include: { category: true } } },
       },
+      purchaseOrders: {
+        orderBy: { createdAt: "desc" },
+      },
+      supplierInvoices: {
+        orderBy: { date: "desc" },
+      },
     },
   });
 }

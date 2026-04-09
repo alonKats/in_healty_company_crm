@@ -81,6 +81,29 @@ export function ProviderDetail({ provider, deleteAction }: ProviderDetailProps) 
             <span className="text-slate-400">({feeTypeLabels[provider.feeType as FeeType]})</span>
           </div>
         </div>
+        {/* Business Info Row */}
+        {(provider.paymentTerms || provider.taxId || provider.bankDetails) && (
+          <div className="mt-4 pt-4 border-t border-slate-100 grid gap-4 sm:grid-cols-3">
+            {provider.taxId && (
+              <div className="text-sm text-slate-600">
+                <span className="text-slate-400">מספר עוסק: </span>
+                {provider.taxId}
+              </div>
+            )}
+            {provider.paymentTerms && (
+              <div className="text-sm text-slate-600">
+                <span className="text-slate-400">תנאי תשלום: </span>
+                {provider.paymentTerms}
+              </div>
+            )}
+            {provider.bankDetails && (
+              <div className="text-sm text-slate-600">
+                <span className="text-slate-400">פרטי בנק: </span>
+                <span className="whitespace-pre-wrap">{provider.bankDetails}</span>
+              </div>
+            )}
+          </div>
+        )}
         {provider.notes && (
           <div className="mt-4 pt-4 border-t border-slate-100">
             <p className="text-sm text-slate-600 whitespace-pre-wrap">{provider.notes}</p>

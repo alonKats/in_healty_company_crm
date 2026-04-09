@@ -156,6 +156,28 @@ export function ProviderForm({ allServices, provider, action, title }: ProviderF
               />
             </div>
 
+            {/* Payment Terms */}
+            <div className="space-y-1.5">
+              <Label htmlFor="paymentTerms">תנאי תשלום</Label>
+              <Input
+                id="paymentTerms"
+                name="paymentTerms"
+                defaultValue={provider?.paymentTerms ?? ""}
+                placeholder='לדוגמה: שוטף + 30'
+              />
+            </div>
+
+            {/* Tax ID */}
+            <div className="space-y-1.5">
+              <Label htmlFor="taxId">מספר עוסק</Label>
+              <Input
+                id="taxId"
+                name="taxId"
+                defaultValue={provider?.taxId ?? ""}
+                placeholder="ח.פ. / עוסק מורשה"
+              />
+            </div>
+
             {/* Fee Type */}
             <div className="space-y-1.5">
               <Label>סוג תעריף</Label>
@@ -203,6 +225,18 @@ export function ProviderForm({ allServices, provider, action, title }: ProviderF
                 </Select>
               </div>
             )}
+          </div>
+
+          {/* Bank Details */}
+          <div className="space-y-1.5">
+            <Label htmlFor="bankDetails">פרטי בנק</Label>
+            <Textarea
+              id="bankDetails"
+              name="bankDetails"
+              defaultValue={provider?.bankDetails ?? ""}
+              placeholder="שם בנק, סניף, מספר חשבון"
+              rows={2}
+            />
           </div>
 
           {/* Notes */}

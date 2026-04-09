@@ -19,6 +19,9 @@ export async function createProvider(formData: FormData) {
   const feeType = formData.get("feeType") as FeeType;
   const defaultFeeStr = formData.get("defaultFee") as string | null;
   const defaultFee = defaultFeeStr ? parseFloat(defaultFeeStr) : null;
+  const paymentTerms = (formData.get("paymentTerms") as string) || null;
+  const bankDetails = (formData.get("bankDetails") as string) || null;
+  const taxId = (formData.get("taxId") as string) || null;
   const servicesJson = formData.get("services") as string;
   const services: ServiceLinkInput[] = servicesJson ? JSON.parse(servicesJson) : [];
 
@@ -31,6 +34,9 @@ export async function createProvider(formData: FormData) {
       notes: notes || null,
       feeType,
       defaultFee,
+      paymentTerms,
+      bankDetails,
+      taxId,
       services: {
         create: services.map((s) => ({
           serviceId: s.serviceId,
@@ -54,6 +60,9 @@ export async function updateProvider(id: string, formData: FormData) {
   const defaultFeeStr = formData.get("defaultFee") as string | null;
   const defaultFee = defaultFeeStr ? parseFloat(defaultFeeStr) : null;
   const isActive = formData.get("isActive") === "true";
+  const paymentTerms = (formData.get("paymentTerms") as string) || null;
+  const bankDetails = (formData.get("bankDetails") as string) || null;
+  const taxId = (formData.get("taxId") as string) || null;
   const servicesJson = formData.get("services") as string;
   const services: ServiceLinkInput[] = servicesJson ? JSON.parse(servicesJson) : [];
 
@@ -70,6 +79,9 @@ export async function updateProvider(id: string, formData: FormData) {
         feeType,
         defaultFee,
         isActive,
+        paymentTerms,
+        bankDetails,
+        taxId,
         services: {
           create: services.map((s) => ({
             serviceId: s.serviceId,
