@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getClientById } from "@/lib/queries/client-queries";
+import { getClientFinancials } from "@/lib/queries/green-invoice-queries";
 import { ClientDetail } from "@/components/clients/client-detail";
 import { serialize } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
@@ -21,5 +22,10 @@ export default async function ClientPage({ params }: ClientPageProps) {
     notFound();
   }
 
-  return <ClientDetail client={client} users={serialize(users)} />;
+  // Fetch GI financials if client is linked
+  const financials = client.greenInvoiceId
+    ? await getClientFinancials(client.greenInvoiceId)
+    : null;
+
+  return <ClientDetail client={client} users={serialize(users)} financials={financials} />;
 }

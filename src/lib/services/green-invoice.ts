@@ -136,6 +136,12 @@ export async function searchDocuments(filters?: Record<string, unknown>) {
   });
 }
 
+// ── Expenses ─────────────────────────────────────────────────────────────────
+
+export async function searchExpenses(filters?: { fromDate?: string; toDate?: string; page?: number; pageSize?: number }) {
+  return apiRequest("POST", "/expenses/search", { page: 1, pageSize: 50, ...filters });
+}
+
 // ── Utility ───────────────────────────────────────────────────────────────────
 
 export async function testConnection() {

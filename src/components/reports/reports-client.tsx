@@ -37,7 +37,7 @@ function fmt(n: number) {
   return `₪${n.toLocaleString("he-IL", { maximumFractionDigits: 0 })}`;
 }
 
-export function ReportsClient({ data, availableYears }: { data: ReportData; availableYears: number[] }) {
+export function ReportsClient({ data, availableYears, hideHeader }: { data: ReportData; availableYears: number[]; hideHeader?: boolean }) {
   const [, setYear] = useState(data.year);
 
   const collectionRate = data.paymentCollection.invoiced > 0
@@ -51,6 +51,7 @@ export function ReportsClient({ data, availableYears }: { data: ReportData; avai
   return (
     <div className="space-y-6">
       {/* Header with year selector */}
+      {!hideHeader && (
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">דוחות</h2>
@@ -70,6 +71,26 @@ export function ReportsClient({ data, availableYears }: { data: ReportData; avai
           </SelectContent>
         </Select>
       </div>
+      )}
+
+      {/* Year selector when header is hidden */}
+      {hideHeader && (
+        <div className="flex justify-end">
+          <Select defaultValue={String(data.year)} onValueChange={(v) => {
+            setYear(Number(v));
+            window.location.href = `/reports?year=${v}&tab=reports`;
+          }}>
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {availableYears.map((y) => (
+                <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* Revenue by month */}
       <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">

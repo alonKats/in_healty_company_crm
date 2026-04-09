@@ -23,6 +23,7 @@ import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 import { deleteClient } from "@/lib/actions/client-actions";
 import { ActivityFeed } from "./activity-feed";
 import { ContactList } from "./contact-list";
+import { ClientFinancials } from "./client-financials";
 import { AddActivityDialog } from "./add-activity-dialog";
 import { EditClientDialog } from "./edit-client-dialog";
 import { toWhatsAppLink } from "@/lib/phone-utils";
@@ -45,9 +46,17 @@ interface ClientWithRelations extends Client {
   orders: Order[];
 }
 
+interface ClientFinancialsData {
+  documents: { id: string; clientName: string; amount: number; status: number; date: string; type: number; url: string }[];
+  totalInvoiced: number;
+  totalPaid: number;
+  outstanding: number;
+}
+
 interface ClientDetailProps {
   client: ClientWithRelations;
   users: Pick<User, "id" | "name">[];
+  financials?: ClientFinancialsData | null;
 }
 
 const statusLabels: Record<string, string> = {
@@ -104,7 +113,7 @@ function MailingListBadge({ clientId, isOnMailingList }: { clientId: string; isO
   );
 }
 
-export function ClientDetail({ client, users }: ClientDetailProps) {
+export function ClientDetail({ client, users, financials }: ClientDetailProps) {
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -237,6 +246,9 @@ export function ClientDetail({ client, users }: ClientDetailProps) {
           <TabsTrigger value="orders">
             הזמנות ({client.orders.length})
           </TabsTrigger>
+          <TabsTrigger value="financials">
+            פיננסים
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="activities" className="mt-4">
@@ -321,6 +333,10 @@ export function ClientDetail({ client, users }: ClientDetailProps) {
               ))}
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="financials" className="mt-4">
+          <ClientFinancials data={financials ?? null} />
         </TabsContent>
       </Tabs>
 
