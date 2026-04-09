@@ -8,16 +8,16 @@ import {
 } from "@react-pdf/renderer";
 import type { Quote, QuoteItem, Client } from "@/generated/prisma";
 
-// Register Rubik font with Hebrew support
+// Register Noto Sans Hebrew — supports Hebrew in react-pdf
 Font.register({
-  family: "Rubik",
+  family: "NotoHebrew",
   fonts: [
     {
-      src: "https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4iFV0U1dYPFkZVO.ttf",
+      src: "https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hebrew@5.0.0/files/noto-sans-hebrew-hebrew-400-normal.woff",
       fontWeight: 400,
     },
     {
-      src: "https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4iFWUUdYPFkZVO.ttf",
+      src: "https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hebrew@5.0.0/files/noto-sans-hebrew-hebrew-700-normal.woff",
       fontWeight: 700,
     },
   ],
@@ -32,7 +32,7 @@ type QuoteWithItems = Quote & {
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: "Rubik",
+    fontFamily: "NotoHebrew",
     fontSize: 10,
     padding: 40,
     direction: "rtl",
