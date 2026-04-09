@@ -31,13 +31,30 @@ const typeConfig: Record<string, { icon: React.ComponentType<{ className?: strin
 
 function timeAgo(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(d.getTime())) return "";
   const diff = Date.now() - d.getTime();
+
+  // Future dates or negative diff — show absolute date
+  if (diff < 0) {
+    return d.toLocaleDateString("he-IL", { day: "2-digit", month: "2-digit", year: "numeric" });
+  }
+
+  const minutes = Math.floor(diff / (1000 * 60));
+  if (minutes < 60) return `לפני ${Math.max(minutes, 1)} דקות`;
+
   const hours = Math.floor(diff / (1000 * 60 * 60));
-  if (hours < 1) return "לפני פחות משעה";
   if (hours < 24) return `לפני ${hours} שעות`;
+
   const days = Math.floor(hours / 24);
-  if (days === 1) return "אתמול";
-  return `לפני ${days} ימים`;
+  if (days < 7) return `לפני ${days} ימים`;
+
+  if (days < 30) {
+    const weeks = Math.floor(days / 7);
+    return `לפני ${weeks} שבועות`;
+  }
+
+  // Older than 30 days — show absolute date
+  return d.toLocaleDateString("he-IL", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
 export function RecentActivity({ activities }: { activities: RecentActivityItem[] }) {

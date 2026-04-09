@@ -65,48 +65,50 @@ export function RevenueChart({ data }: { data: RevenueDataPoint[] }) {
         <h2 className="text-lg font-bold text-slate-800">הכנסות לפי חודש</h2>
         <p className="text-sm text-slate-400 mt-0.5">{formatDateRange(data)}</p>
       </div>
-      <ResponsiveContainer width="100%" height={280}>
-        <BarChart data={chartData} margin={{ top: 24, right: 8, left: 8, bottom: 4 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-          <XAxis
-            dataKey="label"
-            tick={{ fontSize: 11, fill: "#94a3b8" }}
-            axisLine={false}
-            tickLine={false}
-          />
-          <YAxis
-            tick={{ fontSize: 11, fill: "#94a3b8" }}
-            tickFormatter={(v: number) => `₪${(v / 1000).toFixed(0)}k`}
-            axisLine={false}
-            tickLine={false}
-            width={52}
-          />
-          <Tooltip
-            formatter={formatTooltip}
-            contentStyle={{
-              borderRadius: "8px",
-              border: "1px solid #e2e8f0",
-              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-              fontSize: "13px",
-            }}
-          />
-          <Bar
-            dataKey="total"
-            fill="#2A9D8F"
-            radius={[4, 4, 0, 0]}
-            label={{
-              position: "top",
-              fontSize: 11,
-              fill: "#64748b",
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              formatter: (v: any) => {
-                const num = Number(v);
-                return num > 0 ? `₪${(num / 1000).toFixed(0)}k` : "";
-              },
-            }}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+      <div style={{ direction: "ltr" }}>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={chartData} margin={{ top: 24, right: 8, left: 8, bottom: 4 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: 12, fill: "#94a3b8" }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fontSize: 11, fill: "#94a3b8" }}
+              tickFormatter={(v: number) => `₪${(v / 1000).toFixed(0)}k`}
+              axisLine={false}
+              tickLine={false}
+              width={52}
+            />
+            <Tooltip
+              formatter={formatTooltip}
+              contentStyle={{
+                borderRadius: "8px",
+                border: "1px solid #e2e8f0",
+                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                fontSize: "13px",
+              }}
+            />
+            <Bar
+              dataKey="total"
+              fill="#2A9D8F"
+              radius={[4, 4, 0, 0]}
+              label={{
+                position: "top",
+                fontSize: 11,
+                fill: "#64748b",
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                formatter: (v: any) => {
+                  const num = Number(v);
+                  return num > 0 ? `₪${(num / 1000).toFixed(0)}k` : "";
+                },
+              }}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

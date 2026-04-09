@@ -4,7 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell,
+  PieChart, Pie, Cell, Legend,
 } from "recharts";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -74,15 +74,17 @@ export function ReportsClient({ data, availableYears }: { data: ReportData; avai
       {/* Revenue by month */}
       <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <h3 className="text-lg font-bold text-slate-800 mb-4">הכנסות לפי חודש</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data.revenueByMonth.map((d) => ({ ...d, label: formatMonth(d.month) }))}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-            <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} tickFormatter={(v: number) => `₪${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} width={52} />
-            <Tooltip formatter={(v) => [fmt(Number(v)), "הכנסות"]} />
-            <Bar dataKey="total" fill="#2A9D8F" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+        <div style={{ direction: "ltr" }}>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data.revenueByMonth.map((d) => ({ ...d, label: formatMonth(d.month) }))} margin={{ top: 8, right: 8, left: 8, bottom: 4 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+              <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} tickFormatter={(v: number) => `₪${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} width={52} />
+              <Tooltip formatter={(v) => [fmt(Number(v)), "הכנסות"]} />
+              <Bar dataKey="total" fill="#2A9D8F" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Revenue by category + Top clients */}
@@ -92,16 +94,24 @@ export function ReportsClient({ data, availableYears }: { data: ReportData; avai
           {data.revenueByCategory.length === 0 ? (
             <p className="text-sm text-slate-400 py-8 text-center">אין נתונים</p>
           ) : (
-            <ResponsiveContainer width="100%" height={280}>
-              <PieChart>
-                <Pie data={data.revenueByCategory} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={({ name, percent }) => `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`} labelLine={false} fontSize={11}>
-                  {data.revenueByCategory.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v) => fmt(Number(v))} />
-              </PieChart>
-            </ResponsiveContainer>
+            <div style={{ direction: "ltr" }}>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie data={data.revenueByCategory} dataKey="value" nameKey="name" cx="50%" cy="40%" outerRadius={85} fontSize={11}>
+                    {data.revenueByCategory.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(v) => fmt(Number(v))} />
+                  <Legend
+                    verticalAlign="bottom"
+                    align="center"
+                    wrapperStyle={{ fontSize: 12, direction: "rtl", paddingTop: 8 }}
+                    formatter={(value: string) => <span className="text-slate-600">{value}</span>}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </div>
 
