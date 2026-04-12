@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/green-invoice-sync",
-      "schedule": "0 * * * *"
+      "schedule": "0 7 * * *"
     }
   ]
 }
